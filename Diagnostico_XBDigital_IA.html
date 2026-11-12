@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnóstico XBDigital IA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;600&display=swap">
+<style>
+/* Sistema VOID/GOLD de Closer Search: formulario en una columna, barra de progreso fija y bloques numerados en orden de respuesta */
+:root{
+  --void:#070707; --panel:#0f0e0c; --panel2:#15130f; --line:#2a261d; --ivory:#efe9dc; --muted:#a39b8a;
+  --gold:#c9a84c; --gold-soft:rgba(201,168,76,.12); --ok:#7fc79a; --bad:#e58a7d;
+  --display:"Cinzel", Georgia, serif; --serif:"Cormorant Garamond", Georgia, serif; --body:"DM Sans", system-ui, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:90px}
+body{margin:0;background:var(--void);color:var(--ivory);font-family:var(--body);font-size:16px;line-height:1.6;text-align:left;hyphens:none;-webkit-hyphens:none}
+.wrap{max-width:820px;margin:0 auto;padding-inline:16px;padding-block:32px 120px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);letter-spacing:.18em;font-size:13px}
+.brand b{font-weight:600}.brand span{color:var(--gold)}
+header{border-bottom:1px solid var(--line);padding-bottom:24px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(32px,6vw,46px);line-height:1.1;margin:18px 0 12px;text-wrap:balance}
+h1 em{color:var(--gold);font-style:italic}
+h2{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0 0 12px}
+.lede{color:var(--muted);max-width:64ch}
+.intro{margin-top:24px;border:1px solid var(--gold);border-radius:6px;padding:20px;background:var(--gold-soft);display:grid;gap:10px}
+.intro p{margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:var(--muted)}
+.facts strong{color:var(--gold);font-weight:500}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(7,7,7,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+.bar-in{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.track{flex:1;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--gold);transition:width .3s}
+.pct{font-variant-numeric:tabular-nums;font-size:13px;color:var(--gold);min-width:42px;text-align:right}
+.saved{font-size:12px;color:var(--muted);white-space:nowrap}
+nav.index{margin:28px 0 8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px}
+.navb{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ivory);text-decoration:none;font-size:14px}
+.navb:hover,.navb:focus-visible{border-color:var(--gold);outline:none}
+.nb{font-family:var(--display);color:var(--gold);font-size:12px}
+.np{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)}
+.navb.done .np{color:var(--ok)}
+.block{margin-top:44px;display:flex;flex-direction:column;gap:14px}
+.bhead{display:flex;gap:14px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px}
+.bnum{font-family:var(--display);font-size:13px;letter-spacing:.15em;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:4px 8px;margin-top:4px}
+.bintro{color:var(--muted);margin:4px 0 0;font-size:15px}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.q.missing{border-color:var(--bad)}
+.ql{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin:0;font-weight:500}
+.qc{font-family:var(--display);font-size:12px;color:var(--gold);font-variant-numeric:tabular-nums}
+.qt{flex:1 1 280px;min-width:0}
+.req{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.45);border-radius:3px;padding:1px 6px}
+.qh{margin:0;font-size:14px;color:var(--muted)}
+input[type=text],input[type=number],textarea,select{width:100%;background:var(--panel2);color:var(--ivory);border:1px solid var(--line);border-radius:5px;padding:10px 12px;font:inherit;font-size:15px}
+textarea{resize:vertical;min-height:84px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);cursor:pointer;font-size:15px}
+.opt input{accent-color:var(--gold);margin-top:4px}
+.opt:has(input:checked){border-color:var(--gold);background:var(--gold-soft)}
+.opt:has(input:focus-visible){outline:2px solid var(--gold)}
+details.f{padding:0;gap:0}
+details.f>summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+details.f>summary::-webkit-details-marker{display:none}
+details.f>summary::after{content:"+";margin-left:auto;color:var(--gold);font-size:20px;line-height:1}
+details.f[open]>summary::after{content:"–"}
+details.f[open]>summary{border-bottom:1px solid var(--line)}
+details.f>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+details.f>:not(summary){margin-inline:16px}
+details.f>:last-child{margin-bottom:16px}
+.fc{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:3px;padding:1px 6px}
+.fc.full{color:var(--ok);border-color:var(--ok)}
+.web{margin-top:12px;font-size:14px;color:var(--muted);border-left:2px solid var(--gold);padding-left:10px}
+.web strong{color:var(--gold);font-weight:500}
+details.f .og{margin-top:16px;margin-bottom:8px}
+details.f .gfi{font-size:13px}
+details.f textarea{min-height:64px}
+fieldset.q{margin:0}
+legend.ql{padding:0;float:left;width:100%;margin-bottom:8px}
+.gf{clear:both;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.gfi{display:flex;flex-direction:column;gap:4px;font-size:12px;letter-spacing:.03em;color:var(--muted);min-width:0}
+.gfi.wide{grid-column:1/-1}
+.gfi input,.gfi select{padding:8px 10px;font-size:14px}
+.gh{font-family:var(--display);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:14px 0 0;font-weight:500}
+.og{margin:6px 0 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.send{margin-top:52px;border:1px solid var(--gold);border-radius:6px;padding:22px;background:var(--gold-soft);display:flex;flex-direction:column;gap:14px}
+.btn{appearance:none;border:1px solid var(--gold);background:var(--gold);color:#070707;font:600 15px var(--body);padding:12px 20px;border-radius:5px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn.ghost{background:transparent;color:var(--gold)}
+.btn:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.msg{font-size:14px;color:var(--muted)}
+.msg.err{color:var(--bad)}
+.result[hidden]{display:none}
+.result{display:flex;flex-direction:column;gap:12px}
+.result textarea{min-height:200px;font-size:13px;font-family:ui-monospace,Menlo,monospace}
+.sign{margin-top:44px;border-top:1px solid var(--line);padding-top:22px}
+.sign b{font-family:var(--serif);font-size:22px;font-weight:600}
+.muted{color:var(--muted)}
+footer{margin-top:30px;font-size:12px;color:var(--muted)}
+.hp{position:absolute;left:-9999px}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}html{scroll-behavior:auto}}
+@media (min-width:640px){.lede,.intro p,.bintro,.send p,.web,.qh{text-align:justify}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="brand"><svg width="26" height="28" viewBox="0 0 26 28" aria-hidden="true"><path d="M13 1.5 24 7.75v12.5L13 26.5 2 20.25V7.75Z" fill="none" stroke="#c9a84c" stroke-width="1.6"/><path d="m8 14.2 3.4 3.4L18.5 10" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>CLOSER</b><span>SEARCH</span></div>
+  <h1>Diagnóstico de viabilidad<br><em>XBDigital IA</em></h1>
+  <p class="lede">Antes de proponer un equipo de cierre, necesitamos entender cómo funciona vuestro negocio por dentro: qué ofrecéis, a quién, cómo llegan los contactos, cómo se cobra y qué se puede prometer. Con vuestras respuestas preparamos un informe con nuestra recomendación y, si encaja, todo el material para que el equipo trabaje bien desde el primer día.</p>
+</header>
+
+<div class="intro">
+  <p><strong>Cómo rellenarlo.</strong> Respondid con datos reales. Si no tenéis una cifra exacta, una aproximación nos sirve; si no la tenéis, escribid "no lo sabemos". Las preguntas marcadas como imprescindibles son las que necesitamos sí o sí para daros una respuesta.</p>
+  <p>Las respuestas se guardan solas en este navegador, así que podéis dejarlo a medias y volver después desde el mismo dispositivo. Debajo del nombre de cada servicio veréis lo que dice hoy vuestra web, para que lo confirméis o corrijáis.</p>
+  <div class="facts"><span><strong>16</strong> bloques</span><span><strong>129</strong> preguntas y fichas</span><span><strong>61</strong> imprescindibles</span><span><strong>1,5–2 h</strong> en total, en varias sesiones</span></div>
+</div>
+
+<div class="bar" role="status" aria-live="polite"><div class="bar-in"><div class="track"><div class="fill" id="fill"></div></div><span class="pct" id="pct">0 %</span><span class="saved" id="saved">Sin respuestas</span></div></div>
+
+<nav class="index" aria-label="Bloques del cuestionario">
+<a href="#b01" class="navb" data-b="1"><span class="nb">01</span><span class="nt">Quién sois y quién decide</span><span class="np" id="np1">0/11</span></a>
+<a href="#b02" class="navb" data-b="2"><span class="nb">02</span><span class="nt">Volumen y resultados</span><span class="np" id="np2">0/7</span></a>
+<a href="#b03" class="navb" data-b="3"><span class="nb">03</span><span class="nt">Catálogo completo · ficha de cada servicio</span><span class="np" id="np3">0/6</span></a>
+<a href="#b04" class="navb" data-b="4"><span class="nb">04</span><span class="nt">Oferta, precios y condiciones</span><span class="np" id="np4">0/9</span></a>
+<a href="#b05" class="navb" data-b="5"><span class="nb">05</span><span class="nt">Qué recibe el cliente</span><span class="np" id="np5">0/8</span></a>
+<a href="#b06" class="navb" data-b="6"><span class="nb">06</span><span class="nt">Tecnología, cumplimiento y garantías</span><span class="np" id="np6">0/8</span></a>
+<a href="#b07" class="navb" data-b="7"><span class="nb">07</span><span class="nt">El cliente ideal</span><span class="np" id="np7">0/9</span></a>
+<a href="#b08" class="navb" data-b="8"><span class="nb">08</span><span class="nt">Sectores prioritarios</span><span class="np" id="np8">0/9</span></a>
+<a href="#b09" class="navb" data-b="9"><span class="nb">09</span><span class="nt">Otras líneas de negocio</span><span class="np" id="np9">0/6</span></a>
+<a href="#b10" class="navb" data-b="10"><span class="nb">10</span><span class="nt">Captación y leads</span><span class="np" id="np10">0/11</span></a>
+<a href="#b11" class="navb" data-b="11"><span class="nb">11</span><span class="nt">Vuestro proceso de venta hoy</span><span class="np" id="np11">0/11</span></a>
+<a href="#b12" class="navb" data-b="12"><span class="nb">12</span><span class="nt">Mensaje, objeciones y límites</span><span class="np" id="np12">0/6</span></a>
+<a href="#b13" class="navb" data-b="13"><span class="nb">13</span><span class="nt">Contratación, pagos y cobros</span><span class="np" id="np13">0/8</span></a>
+<a href="#b14" class="navb" data-b="14"><span class="nb">14</span><span class="nt">Prueba social y recursos</span><span class="np" id="np14">0/6</span></a>
+<a href="#b15" class="navb" data-b="15"><span class="nb">15</span><span class="nt">Cómo trabajaríamos juntos</span><span class="np" id="np15">0/12</span></a>
+<a href="#b16" class="navb" data-b="16"><span class="nb">16</span><span class="nt">Documentos y accesos</span><span class="np" id="np16">0/2</span></a>
+</nav>
+
+<form id="f" name="diagnostico-xbdigital" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+<input type="hidden" name="form-name" value="diagnostico-xbdigital">
+<p class="hp"><label>No rellenar <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+<section class="block" id="b01" data-b="1">
+<div class="bhead"><span class="bnum">01</span><div><h2>Quién sois y quién decide</h2><p class="bintro">Para saber con quién hablamos, quién firma y cómo está organizada XBDigital IA.</p></div></div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0101"><span class="qc">01.01</span><span class="qt">Nombre y cargo de quien rellena este cuestionario</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0101" name="01.01 nombre_cargo_quien_rellena_este_cuestionario" required>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0102"><span class="qc">01.02</span><span class="qt">Email y teléfono de contacto</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0102" name="01.02 email_telefono_contacto" required>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0103"><span class="qc">01.03</span><span class="qt">¿Quién es el titular de XBDigital IA y quién tiene poderes para firmar acuerdos comerciales?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Nombre y cargo. Si firma otra persona por delegación, indicadlo.</p>
+<textarea id="q0103" name="01.03 quien_titular_xbdigital_ia_quien_tiene" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="s">
+<label class="ql" for="q0104"><span class="qc">01.04</span><span class="qt">¿Con qué forma jurídica facturáis?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<select id="q0104" name="01.04 forma_juridica_facturais" required><option value="">Elige una opción</option><option>Autónomo</option><option>Sociedad limitada</option><option>Otro tipo de sociedad</option><option>Sociedad en constitución</option></select>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0105"><span class="qc">01.05</span><span class="qt">Razón social y NIF de quien factura</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">En el aviso legal de vuestra web todavía no aparecen. Los necesitamos para cualquier acuerdo.</p>
+<textarea id="q0105" name="01.05 razon_social_nif_quien_factura" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0106"><span class="qc">01.06</span><span class="qt">¿Quién será nuestro interlocutor en el día a día?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Nombre, cargo, email y teléfono.</p>
+<input type="text" id="q0106" name="01.06 quien_sera_nuestro_interlocutor_dia_dia" required>
+</div>
+<div class="q" data-req="1" data-type="s">
+<label class="ql" for="q0107"><span class="qc">01.07</span><span class="qt">¿Cuántas horas a la semana puede dedicar esa persona al equipo de cierre durante el primer mes?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<select id="q0107" name="01.07 cuantas_horas_semana_puede_dedicar_esa" required><option value="">Elige una opción</option><option>Menos de 1 hora</option><option>1–2 horas</option><option>3–4 horas</option><option>Más de 4 horas</option></select>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0108"><span class="qc">01.08</span><span class="qt">¿Desde cuándo vendéis estos servicios?</span></label>
+<p class="qh">Mes y año.</p>
+<input type="text" id="q0108" name="01.08 desde_cuando_vendeis_estos_servicios">
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0109"><span class="qc">01.09</span><span class="qt">¿Cuántas personas trabajan en XBDigital IA y en qué áreas?</span></label>
+<p class="qh">Socios, implantación técnica, desarrollo, comercial, soporte y colaboradores externos.</p>
+<textarea id="q0109" name="01.09 cuantas_personas_trabajan_xbdigital_ia_areas" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0110"><span class="qc">01.10</span><span class="qt">¿Desde dónde trabajáis y en qué zonas dais servicio?</span></label>
+<p class="qh">Ciudad, comarca, Cataluña, toda España o fuera de España.</p>
+<input type="text" id="q0110" name="01.10 desde_donde_trabajais_zonas_dais_servicio">
+</div>
+<div class="q" data-req="0" data-type="c">
+<p class="ql"><span class="qc">01.11</span><span class="qt">¿En qué idiomas atendéis y vendéis?</span></p>
+<div class="opts" role="group">
+<label class="opt"><input type="checkbox" id="q0111_1" name="01.11 idiomas_atendeis_vendeis[]" value="Catalán"><span>Catalán</span></label>
+<label class="opt"><input type="checkbox" id="q0111_2" name="01.11 idiomas_atendeis_vendeis[]" value="Castellano"><span>Castellano</span></label>
+<label class="opt"><input type="checkbox" id="q0111_3" name="01.11 idiomas_atendeis_vendeis[]" value="Inglés"><span>Inglés</span></label>
+<label class="opt"><input type="checkbox" id="q0111_4" name="01.11 idiomas_atendeis_vendeis[]" value="Otro"><span>Otro</span></label>
+</div>
+</div>
+</section>
+<section class="block" id="b02" data-b="2">
+<div class="bhead"><span class="bnum">02</span><div><h2>Volumen y resultados</h2><p class="bintro">Las cifras de hoy. Si no tenéis el dato exacto, una aproximación honesta nos sirve.</p></div></div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0201"><span class="qc">02.01</span><span class="qt">Facturación aproximada de 2026 y prevista para 2027</span></label>
+<input type="text" id="q0201" name="02.01 facturacion_aproximada_2026_prevista_2027">
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0202"><span class="qc">02.02</span><span class="qt">¿Cuántos clientes de pago tenéis hoy y cuántos pagan una cuota mensual?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0202" name="02.02 cuantos_clientes_pago_teneis_cuantos_pagan" required>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0203"><span class="qc">02.03</span><span class="qt">¿Qué parte de la facturación viene de implantaciones (pago único) y qué parte de cuotas mensuales?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0203" name="02.03 parte_facturacion_viene_implantaciones_pago_unico" required>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0204"><span class="qc">02.04</span><span class="qt">Ingreso recurrente mensual actual (suma de todas las cuotas)</span></label>
+<input type="text" id="q0204" name="02.04 ingreso_recurrente_mensual_actual_suma_todas">
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0205"><span class="qc">02.05</span><span class="qt">¿Qué servicios o planes facturan más hoy?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0205" name="02.05 servicios_planes_facturan_mas" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0206"><span class="qc">02.06</span><span class="qt">¿Qué objetivo de ventas tenéis para los próximos 12 meses y en qué servicios?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0206" name="02.06 objetivo_ventas_teneis_proximos_12_meses" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0207"><span class="qc">02.07</span><span class="qt">¿En qué meses vendéis más y en cuáles menos?</span></label>
+<input type="text" id="q0207" name="02.07 meses_vendeis_mas_cuales_menos">
+</div>
+</section>
+<section class="block" id="b03" data-b="3">
+<div class="bhead"><span class="bnum">03</span><div><h2>Catálogo completo · ficha de cada servicio</h2><p class="bintro">Una ficha por plan y por servicio. Abrid cada una y contadnos todo lo que sepáis: con esto preparamos un informe de cada servicio para el equipo. Debajo del nombre veréis lo que dice hoy vuestra web, para que lo confirméis o corrijáis.</p></div></div>
+<h3 class="gh">Planes de agentes de IA</h3>
+<details class="q f" data-req="0" data-type="f" data-nf="28" open><summary class="ql"><span class="qc">03.01</span><span class="qt">Plan Essencial</span><span class="fc">0/28</span></summary>
+<p class="web"><strong>Según vuestra web:</strong> 1 agente de chat (web o WhatsApp), respuestas 24/7, entrenamiento inicial, panel básico de leads, soporte por email y hasta 500 conversaciones al mes. Sin precio publicado. Confirmadlo o corregidlo.</p>
+<p class="og">El servicio</p><div class="gf">
+<label class="gfi wide">Qué problema le resuelve al cliente<textarea id="q0301_01" name="03.01 plan_essencial · problema_resuelve_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién va dirigido<textarea id="q0301_02" name="03.01 plan_essencial · quien_va_dirigido" rows="2"></textarea></label>
+<label class="gfi wide">Qué incluye exactamente<textarea id="q0301_03" name="03.01 plan_essencial · incluye_exactamente" rows="2"></textarea></label>
+<label class="gfi wide">Qué no incluye<textarea id="q0301_04" name="03.01 plan_essencial · incluye" rows="2"></textarea></label>
+<label class="gfi">Plazo real de implantación<input type="text" id="q0301_05" name="03.01 plan_essencial · plazo_real_implantacion"></label>
+<label class="gfi wide">Plataforma y herramientas sobre las que se monta<textarea id="q0301_06" name="03.01 plan_essencial · plataforma_herramientas_sobre_monta" rows="2"></textarea></label>
+<label class="gfi wide">Qué tiene que aportar el cliente para arrancar<textarea id="q0301_07" name="03.01 plan_essencial · tiene_aportar_cliente_arrancar" rows="2"></textarea></label>
+<label class="gfi wide">Soporte y mantenimiento incluidos<textarea id="q0301_08" name="03.01 plan_essencial · soporte_mantenimiento_incluidos" rows="2"></textarea></label>
+<label class="gfi">Límites de uso (conversaciones, minutos, agentes)<input type="text" id="q0301_09" name="03.01 plan_essencial · limites_uso_conversaciones_minutos_agentes"></label>
+</div>
+<p class="og">Precio y ventas</p><div class="gf">
+<label class="gfi">Precio de implantación<input type="text" id="q0301_10" name="03.01 plan_essencial · precio_implantacion"></label>
+<label class="gfi">Cuota mensual<input type="text" id="q0301_11" name="03.01 plan_essencial · cuota_mensual"></label>
+<label class="gfi">Precio medio que paga realmente el cliente<input type="text" id="q0301_12" name="03.01 plan_essencial · precio_medio_paga_realmente_cliente"></label>
+<label class="gfi">Descuento máximo permitido<input type="text" id="q0301_13" name="03.01 plan_essencial · descuento_maximo_permitido"></label>
+<label class="gfi">Permanencia mínima<input type="text" id="q0301_14" name="03.01 plan_essencial · permanencia_minima"></label>
+<label class="gfi wide">Costes variables que paga el cliente (minutos, mensajes, licencias)<textarea id="q0301_15" name="03.01 plan_essencial · costes_variables_paga_cliente_minutos_mensajes" rows="2"></textarea></label>
+<label class="gfi">Formas de pago<input type="text" id="q0301_16" name="03.01 plan_essencial · formas_pago"></label>
+<label class="gfi">Ventas al mes (media de los últimos 6 meses)<input type="text" id="q0301_17" name="03.01 plan_essencial · ventas_mes_media_ultimos_6_meses"></label>
+<label class="gfi">Clientes activos con este servicio<input type="text" id="q0301_18" name="03.01 plan_essencial · clientes_activos_este_servicio"></label>
+<label class="gfi wide">Bajas en los últimos 6 meses y motivo<textarea id="q0301_19" name="03.01 plan_essencial · bajas_ultimos_6_meses_motivo" rows="2"></textarea></label>
+<label class="gfi">Para quién se vende<select id="q0301_20" name="03.01 plan_essencial · quien_vende"><option value="">Elige</option><option>Autónomos</option><option>Pymes</option><option>Empresas medianas</option><option>Varios tamaños</option><option>Ya no se vende</option></select></label>
+</div>
+<p class="og">Cómo se vende</p><div class="gf">
+<label class="gfi wide">Por qué lo compran<textarea id="q0301_21" name="03.01 plan_essencial · compran" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones propias de este servicio<textarea id="q0301_22" name="03.01 plan_essencial · objeciones_propias_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Diferencia frente a servicios parecidos de la competencia<textarea id="q0301_23" name="03.01 plan_essencial · diferencia_frente_servicios_parecidos_competencia" rows="2"></textarea></label>
+<label class="gfi wide">Resultados y testimonios citables (con permiso)<textarea id="q0301_24" name="03.01 plan_essencial · resultados_testimonios_citables_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Qué no se debe prometer de este servicio<textarea id="q0301_25" name="03.01 plan_essencial · debe_prometer_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Siguiente servicio que se recomienda al cliente<textarea id="q0301_26" name="03.01 plan_essencial · siguiente_servicio_recomienda_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles (demo grabada, presentación, enlace de pago)<textarea id="q0301_27" name="03.01 plan_essencial · materiales_disponibles_demo_grabada_presentacion_enlace" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0301_28" name="03.01 plan_essencial · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="28"><summary class="ql"><span class="qc">03.02</span><span class="qt">Plan Professional</span><span class="fc">0/28</span></summary>
+<p class="web"><strong>Según vuestra web:</strong> hasta 3 agentes (chat, voz y agenda), multicanal (web, WhatsApp y teléfono), cualificación automática de leads, integración con CRM y calendario, informes mensuales, soporte prioritario y conversaciones ilimitadas. Lo marcáis como el más popular. Sin precio publicado. Confirmadlo o corregidlo.</p>
+<p class="og">El servicio</p><div class="gf">
+<label class="gfi wide">Qué problema le resuelve al cliente<textarea id="q0302_01" name="03.02 plan_professional · problema_resuelve_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién va dirigido<textarea id="q0302_02" name="03.02 plan_professional · quien_va_dirigido" rows="2"></textarea></label>
+<label class="gfi wide">Qué incluye exactamente<textarea id="q0302_03" name="03.02 plan_professional · incluye_exactamente" rows="2"></textarea></label>
+<label class="gfi wide">Qué no incluye<textarea id="q0302_04" name="03.02 plan_professional · incluye" rows="2"></textarea></label>
+<label class="gfi">Plazo real de implantación<input type="text" id="q0302_05" name="03.02 plan_professional · plazo_real_implantacion"></label>
+<label class="gfi wide">Plataforma y herramientas sobre las que se monta<textarea id="q0302_06" name="03.02 plan_professional · plataforma_herramientas_sobre_monta" rows="2"></textarea></label>
+<label class="gfi wide">Qué tiene que aportar el cliente para arrancar<textarea id="q0302_07" name="03.02 plan_professional · tiene_aportar_cliente_arrancar" rows="2"></textarea></label>
+<label class="gfi wide">Soporte y mantenimiento incluidos<textarea id="q0302_08" name="03.02 plan_professional · soporte_mantenimiento_incluidos" rows="2"></textarea></label>
+<label class="gfi">Límites de uso (conversaciones, minutos, agentes)<input type="text" id="q0302_09" name="03.02 plan_professional · limites_uso_conversaciones_minutos_agentes"></label>
+</div>
+<p class="og">Precio y ventas</p><div class="gf">
+<label class="gfi">Precio de implantación<input type="text" id="q0302_10" name="03.02 plan_professional · precio_implantacion"></label>
+<label class="gfi">Cuota mensual<input type="text" id="q0302_11" name="03.02 plan_professional · cuota_mensual"></label>
+<label class="gfi">Precio medio que paga realmente el cliente<input type="text" id="q0302_12" name="03.02 plan_professional · precio_medio_paga_realmente_cliente"></label>
+<label class="gfi">Descuento máximo permitido<input type="text" id="q0302_13" name="03.02 plan_professional · descuento_maximo_permitido"></label>
+<label class="gfi">Permanencia mínima<input type="text" id="q0302_14" name="03.02 plan_professional · permanencia_minima"></label>
+<label class="gfi wide">Costes variables que paga el cliente (minutos, mensajes, licencias)<textarea id="q0302_15" name="03.02 plan_professional · costes_variables_paga_cliente_minutos_mensajes" rows="2"></textarea></label>
+<label class="gfi">Formas de pago<input type="text" id="q0302_16" name="03.02 plan_professional · formas_pago"></label>
+<label class="gfi">Ventas al mes (media de los últimos 6 meses)<input type="text" id="q0302_17" name="03.02 plan_professional · ventas_mes_media_ultimos_6_meses"></label>
+<label class="gfi">Clientes activos con este servicio<input type="text" id="q0302_18" name="03.02 plan_professional · clientes_activos_este_servicio"></label>
+<label class="gfi wide">Bajas en los últimos 6 meses y motivo<textarea id="q0302_19" name="03.02 plan_professional · bajas_ultimos_6_meses_motivo" rows="2"></textarea></label>
+<label class="gfi">Para quién se vende<select id="q0302_20" name="03.02 plan_professional · quien_vende"><option value="">Elige</option><option>Autónomos</option><option>Pymes</option><option>Empresas medianas</option><option>Varios tamaños</option><option>Ya no se vende</option></select></label>
+</div>
+<p class="og">Cómo se vende</p><div class="gf">
+<label class="gfi wide">Por qué lo compran<textarea id="q0302_21" name="03.02 plan_professional · compran" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones propias de este servicio<textarea id="q0302_22" name="03.02 plan_professional · objeciones_propias_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Diferencia frente a servicios parecidos de la competencia<textarea id="q0302_23" name="03.02 plan_professional · diferencia_frente_servicios_parecidos_competencia" rows="2"></textarea></label>
+<label class="gfi wide">Resultados y testimonios citables (con permiso)<textarea id="q0302_24" name="03.02 plan_professional · resultados_testimonios_citables_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Qué no se debe prometer de este servicio<textarea id="q0302_25" name="03.02 plan_professional · debe_prometer_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Siguiente servicio que se recomienda al cliente<textarea id="q0302_26" name="03.02 plan_professional · siguiente_servicio_recomienda_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles (demo grabada, presentación, enlace de pago)<textarea id="q0302_27" name="03.02 plan_professional · materiales_disponibles_demo_grabada_presentacion_enlace" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0302_28" name="03.02 plan_professional · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="28"><summary class="ql"><span class="qc">03.03</span><span class="qt">Plan Enterprise</span><span class="fc">0/28</span></summary>
+<p class="web"><strong>Según vuestra web:</strong> agentes ilimitados y personalizados, todos los canales, integraciones a medida, SLA garantizado, optimización continua, gestor de cuenta dedicado y formación al equipo. Sin precio publicado. Confirmadlo o corregidlo.</p>
+<p class="og">El servicio</p><div class="gf">
+<label class="gfi wide">Qué problema le resuelve al cliente<textarea id="q0303_01" name="03.03 plan_enterprise · problema_resuelve_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién va dirigido<textarea id="q0303_02" name="03.03 plan_enterprise · quien_va_dirigido" rows="2"></textarea></label>
+<label class="gfi wide">Qué incluye exactamente<textarea id="q0303_03" name="03.03 plan_enterprise · incluye_exactamente" rows="2"></textarea></label>
+<label class="gfi wide">Qué no incluye<textarea id="q0303_04" name="03.03 plan_enterprise · incluye" rows="2"></textarea></label>
+<label class="gfi">Plazo real de implantación<input type="text" id="q0303_05" name="03.03 plan_enterprise · plazo_real_implantacion"></label>
+<label class="gfi wide">Plataforma y herramientas sobre las que se monta<textarea id="q0303_06" name="03.03 plan_enterprise · plataforma_herramientas_sobre_monta" rows="2"></textarea></label>
+<label class="gfi wide">Qué tiene que aportar el cliente para arrancar<textarea id="q0303_07" name="03.03 plan_enterprise · tiene_aportar_cliente_arrancar" rows="2"></textarea></label>
+<label class="gfi wide">Soporte y mantenimiento incluidos<textarea id="q0303_08" name="03.03 plan_enterprise · soporte_mantenimiento_incluidos" rows="2"></textarea></label>
+<label class="gfi">Límites de uso (conversaciones, minutos, agentes)<input type="text" id="q0303_09" name="03.03 plan_enterprise · limites_uso_conversaciones_minutos_agentes"></label>
+</div>
+<p class="og">Precio y ventas</p><div class="gf">
+<label class="gfi">Precio de implantación<input type="text" id="q0303_10" name="03.03 plan_enterprise · precio_implantacion"></label>
+<label class="gfi">Cuota mensual<input type="text" id="q0303_11" name="03.03 plan_enterprise · cuota_mensual"></label>
+<label class="gfi">Precio medio que paga realmente el cliente<input type="text" id="q0303_12" name="03.03 plan_enterprise · precio_medio_paga_realmente_cliente"></label>
+<label class="gfi">Descuento máximo permitido<input type="text" id="q0303_13" name="03.03 plan_enterprise · descuento_maximo_permitido"></label>
+<label class="gfi">Permanencia mínima<input type="text" id="q0303_14" name="03.03 plan_enterprise · permanencia_minima"></label>
+<label class="gfi wide">Costes variables que paga el cliente (minutos, mensajes, licencias)<textarea id="q0303_15" name="03.03 plan_enterprise · costes_variables_paga_cliente_minutos_mensajes" rows="2"></textarea></label>
+<label class="gfi">Formas de pago<input type="text" id="q0303_16" name="03.03 plan_enterprise · formas_pago"></label>
+<label class="gfi">Ventas al mes (media de los últimos 6 meses)<input type="text" id="q0303_17" name="03.03 plan_enterprise · ventas_mes_media_ultimos_6_meses"></label>
+<label class="gfi">Clientes activos con este servicio<input type="text" id="q0303_18" name="03.03 plan_enterprise · clientes_activos_este_servicio"></label>
+<label class="gfi wide">Bajas en los últimos 6 meses y motivo<textarea id="q0303_19" name="03.03 plan_enterprise · bajas_ultimos_6_meses_motivo" rows="2"></textarea></label>
+<label class="gfi">Para quién se vende<select id="q0303_20" name="03.03 plan_enterprise · quien_vende"><option value="">Elige</option><option>Autónomos</option><option>Pymes</option><option>Empresas medianas</option><option>Varios tamaños</option><option>Ya no se vende</option></select></label>
+</div>
+<p class="og">Cómo se vende</p><div class="gf">
+<label class="gfi wide">Por qué lo compran<textarea id="q0303_21" name="03.03 plan_enterprise · compran" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones propias de este servicio<textarea id="q0303_22" name="03.03 plan_enterprise · objeciones_propias_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Diferencia frente a servicios parecidos de la competencia<textarea id="q0303_23" name="03.03 plan_enterprise · diferencia_frente_servicios_parecidos_competencia" rows="2"></textarea></label>
+<label class="gfi wide">Resultados y testimonios citables (con permiso)<textarea id="q0303_24" name="03.03 plan_enterprise · resultados_testimonios_citables_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Qué no se debe prometer de este servicio<textarea id="q0303_25" name="03.03 plan_enterprise · debe_prometer_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Siguiente servicio que se recomienda al cliente<textarea id="q0303_26" name="03.03 plan_enterprise · siguiente_servicio_recomienda_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles (demo grabada, presentación, enlace de pago)<textarea id="q0303_27" name="03.03 plan_enterprise · materiales_disponibles_demo_grabada_presentacion_enlace" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0303_28" name="03.03 plan_enterprise · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<h3 class="gh">Servicios</h3>
+<details class="q f" data-req="0" data-type="f" data-nf="28"><summary class="ql"><span class="qc">03.04</span><span class="qt">Automatizaciones de procesos</span><span class="fc">0/28</span></summary>
+<p class="web"><strong>Según vuestra web:</strong> es vuestro servicio principal («la més demandada»): captación de leads, seguimiento por email y WhatsApp, CRM y calendario conectados, presupuestos y citas automáticos, recordatorios y reactivación de clientes. Implantación en 2 semanas. Confirmadlo o corregidlo.</p>
+<p class="og">El servicio</p><div class="gf">
+<label class="gfi wide">Qué problema le resuelve al cliente<textarea id="q0304_01" name="03.04 automatizaciones_procesos · problema_resuelve_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién va dirigido<textarea id="q0304_02" name="03.04 automatizaciones_procesos · quien_va_dirigido" rows="2"></textarea></label>
+<label class="gfi wide">Qué incluye exactamente<textarea id="q0304_03" name="03.04 automatizaciones_procesos · incluye_exactamente" rows="2"></textarea></label>
+<label class="gfi wide">Qué no incluye<textarea id="q0304_04" name="03.04 automatizaciones_procesos · incluye" rows="2"></textarea></label>
+<label class="gfi">Plazo real de implantación<input type="text" id="q0304_05" name="03.04 automatizaciones_procesos · plazo_real_implantacion"></label>
+<label class="gfi wide">Plataforma y herramientas sobre las que se monta<textarea id="q0304_06" name="03.04 automatizaciones_procesos · plataforma_herramientas_sobre_monta" rows="2"></textarea></label>
+<label class="gfi wide">Qué tiene que aportar el cliente para arrancar<textarea id="q0304_07" name="03.04 automatizaciones_procesos · tiene_aportar_cliente_arrancar" rows="2"></textarea></label>
+<label class="gfi wide">Soporte y mantenimiento incluidos<textarea id="q0304_08" name="03.04 automatizaciones_procesos · soporte_mantenimiento_incluidos" rows="2"></textarea></label>
+<label class="gfi">Límites de uso (conversaciones, minutos, agentes)<input type="text" id="q0304_09" name="03.04 automatizaciones_procesos · limites_uso_conversaciones_minutos_agentes"></label>
+</div>
+<p class="og">Precio y ventas</p><div class="gf">
+<label class="gfi">Precio de implantación<input type="text" id="q0304_10" name="03.04 automatizaciones_procesos · precio_implantacion"></label>
+<label class="gfi">Cuota mensual<input type="text" id="q0304_11" name="03.04 automatizaciones_procesos · cuota_mensual"></label>
+<label class="gfi">Precio medio que paga realmente el cliente<input type="text" id="q0304_12" name="03.04 automatizaciones_procesos · precio_medio_paga_realmente_cliente"></label>
+<label class="gfi">Descuento máximo permitido<input type="text" id="q0304_13" name="03.04 automatizaciones_procesos · descuento_maximo_permitido"></label>
+<label class="gfi">Permanencia mínima<input type="text" id="q0304_14" name="03.04 automatizaciones_procesos · permanencia_minima"></label>
+<label class="gfi wide">Costes variables que paga el cliente (minutos, mensajes, licencias)<textarea id="q0304_15" name="03.04 automatizaciones_procesos · costes_variables_paga_cliente_minutos_mensajes" rows="2"></textarea></label>
+<label class="gfi">Formas de pago<input type="text" id="q0304_16" name="03.04 automatizaciones_procesos · formas_pago"></label>
+<label class="gfi">Ventas al mes (media de los últimos 6 meses)<input type="text" id="q0304_17" name="03.04 automatizaciones_procesos · ventas_mes_media_ultimos_6_meses"></label>
+<label class="gfi">Clientes activos con este servicio<input type="text" id="q0304_18" name="03.04 automatizaciones_procesos · clientes_activos_este_servicio"></label>
+<label class="gfi wide">Bajas en los últimos 6 meses y motivo<textarea id="q0304_19" name="03.04 automatizaciones_procesos · bajas_ultimos_6_meses_motivo" rows="2"></textarea></label>
+<label class="gfi">Para quién se vende<select id="q0304_20" name="03.04 automatizaciones_procesos · quien_vende"><option value="">Elige</option><option>Autónomos</option><option>Pymes</option><option>Empresas medianas</option><option>Varios tamaños</option><option>Ya no se vende</option></select></label>
+</div>
+<p class="og">Cómo se vende</p><div class="gf">
+<label class="gfi wide">Por qué lo compran<textarea id="q0304_21" name="03.04 automatizaciones_procesos · compran" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones propias de este servicio<textarea id="q0304_22" name="03.04 automatizaciones_procesos · objeciones_propias_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Diferencia frente a servicios parecidos de la competencia<textarea id="q0304_23" name="03.04 automatizaciones_procesos · diferencia_frente_servicios_parecidos_competencia" rows="2"></textarea></label>
+<label class="gfi wide">Resultados y testimonios citables (con permiso)<textarea id="q0304_24" name="03.04 automatizaciones_procesos · resultados_testimonios_citables_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Qué no se debe prometer de este servicio<textarea id="q0304_25" name="03.04 automatizaciones_procesos · debe_prometer_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Siguiente servicio que se recomienda al cliente<textarea id="q0304_26" name="03.04 automatizaciones_procesos · siguiente_servicio_recomienda_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles (demo grabada, presentación, enlace de pago)<textarea id="q0304_27" name="03.04 automatizaciones_procesos · materiales_disponibles_demo_grabada_presentacion_enlace" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0304_28" name="03.04 automatizaciones_procesos · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="28"><summary class="ql"><span class="qc">03.05</span><span class="qt">Agente de voz con IA</span><span class="fc">0/28</span></summary>
+<p class="web"><strong>Según vuestra web:</strong> atiende llamadas 24/7. Vuestra calculadora estima unos 414 € al mes de coste para 40 llamadas diarias de 3 minutos, sobre la plataforma AI Employee de GoHighLevel. Confirmadlo o corregidlo.</p>
+<p class="og">El servicio</p><div class="gf">
+<label class="gfi wide">Qué problema le resuelve al cliente<textarea id="q0305_01" name="03.05 agente_voz_ia · problema_resuelve_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién va dirigido<textarea id="q0305_02" name="03.05 agente_voz_ia · quien_va_dirigido" rows="2"></textarea></label>
+<label class="gfi wide">Qué incluye exactamente<textarea id="q0305_03" name="03.05 agente_voz_ia · incluye_exactamente" rows="2"></textarea></label>
+<label class="gfi wide">Qué no incluye<textarea id="q0305_04" name="03.05 agente_voz_ia · incluye" rows="2"></textarea></label>
+<label class="gfi">Plazo real de implantación<input type="text" id="q0305_05" name="03.05 agente_voz_ia · plazo_real_implantacion"></label>
+<label class="gfi wide">Plataforma y herramientas sobre las que se monta<textarea id="q0305_06" name="03.05 agente_voz_ia · plataforma_herramientas_sobre_monta" rows="2"></textarea></label>
+<label class="gfi wide">Qué tiene que aportar el cliente para arrancar<textarea id="q0305_07" name="03.05 agente_voz_ia · tiene_aportar_cliente_arrancar" rows="2"></textarea></label>
+<label class="gfi wide">Soporte y mantenimiento incluidos<textarea id="q0305_08" name="03.05 agente_voz_ia · soporte_mantenimiento_incluidos" rows="2"></textarea></label>
+<label class="gfi">Límites de uso (conversaciones, minutos, agentes)<input type="text" id="q0305_09" name="03.05 agente_voz_ia · limites_uso_conversaciones_minutos_agentes"></label>
+</div>
+<p class="og">Precio y ventas</p><div class="gf">
+<label class="gfi">Precio de implantación<input type="text" id="q0305_10" name="03.05 agente_voz_ia · precio_implantacion"></label>
+<label class="gfi">Cuota mensual<input type="text" id="q0305_11" name="03.05 agente_voz_ia · cuota_mensual"></label>
+<label class="gfi">Precio medio que paga realmente el cliente<input type="text" id="q0305_12" name="03.05 agente_voz_ia · precio_medio_paga_realmente_cliente"></label>
+<label class="gfi">Descuento máximo permitido<input type="text" id="q0305_13" name="03.05 agente_voz_ia · descuento_maximo_permitido"></label>
+<label class="gfi">Permanencia mínima<input type="text" id="q0305_14" name="03.05 agente_voz_ia · permanencia_minima"></label>
+<label class="gfi wide">Costes variables que paga el cliente (minutos, mensajes, licencias)<textarea id="q0305_15" name="03.05 agente_voz_ia · costes_variables_paga_cliente_minutos_mensajes" rows="2"></textarea></label>
+<label class="gfi">Formas de pago<input type="text" id="q0305_16" name="03.05 agente_voz_ia · formas_pago"></label>
+<label class="gfi">Ventas al mes (media de los últimos 6 meses)<input type="text" id="q0305_17" name="03.05 agente_voz_ia · ventas_mes_media_ultimos_6_meses"></label>
+<label class="gfi">Clientes activos con este servicio<input type="text" id="q0305_18" name="03.05 agente_voz_ia · clientes_activos_este_servicio"></label>
+<label class="gfi wide">Bajas en los últimos 6 meses y motivo<textarea id="q0305_19" name="03.05 agente_voz_ia · bajas_ultimos_6_meses_motivo" rows="2"></textarea></label>
+<label class="gfi">Para quién se vende<select id="q0305_20" name="03.05 agente_voz_ia · quien_vende"><option value="">Elige</option><option>Autónomos</option><option>Pymes</option><option>Empresas medianas</option><option>Varios tamaños</option><option>Ya no se vende</option></select></label>
+</div>
+<p class="og">Cómo se vende</p><div class="gf">
+<label class="gfi wide">Por qué lo compran<textarea id="q0305_21" name="03.05 agente_voz_ia · compran" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones propias de este servicio<textarea id="q0305_22" name="03.05 agente_voz_ia · objeciones_propias_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Diferencia frente a servicios parecidos de la competencia<textarea id="q0305_23" name="03.05 agente_voz_ia · diferencia_frente_servicios_parecidos_competencia" rows="2"></textarea></label>
+<label class="gfi wide">Resultados y testimonios citables (con permiso)<textarea id="q0305_24" name="03.05 agente_voz_ia · resultados_testimonios_citables_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Qué no se debe prometer de este servicio<textarea id="q0305_25" name="03.05 agente_voz_ia · debe_prometer_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Siguiente servicio que se recomienda al cliente<textarea id="q0305_26" name="03.05 agente_voz_ia · siguiente_servicio_recomienda_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles (demo grabada, presentación, enlace de pago)<textarea id="q0305_27" name="03.05 agente_voz_ia · materiales_disponibles_demo_grabada_presentacion_enlace" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0305_28" name="03.05 agente_voz_ia · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="28"><summary class="ql"><span class="qc">03.06</span><span class="qt">Webs que convierten</span><span class="fc">0/28</span></summary>
+<p class="web"><strong>Según vuestra web:</strong> webs corporativas con diseño responsive, SEO y velocidad, formularios inteligentes e integración con CRM e IA. Caso publicado: OSE Barcelona. Sin precio publicado. Confirmadlo o corregidlo.</p>
+<p class="og">El servicio</p><div class="gf">
+<label class="gfi wide">Qué problema le resuelve al cliente<textarea id="q0306_01" name="03.06 webs_convierten · problema_resuelve_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién va dirigido<textarea id="q0306_02" name="03.06 webs_convierten · quien_va_dirigido" rows="2"></textarea></label>
+<label class="gfi wide">Qué incluye exactamente<textarea id="q0306_03" name="03.06 webs_convierten · incluye_exactamente" rows="2"></textarea></label>
+<label class="gfi wide">Qué no incluye<textarea id="q0306_04" name="03.06 webs_convierten · incluye" rows="2"></textarea></label>
+<label class="gfi">Plazo real de implantación<input type="text" id="q0306_05" name="03.06 webs_convierten · plazo_real_implantacion"></label>
+<label class="gfi wide">Plataforma y herramientas sobre las que se monta<textarea id="q0306_06" name="03.06 webs_convierten · plataforma_herramientas_sobre_monta" rows="2"></textarea></label>
+<label class="gfi wide">Qué tiene que aportar el cliente para arrancar<textarea id="q0306_07" name="03.06 webs_convierten · tiene_aportar_cliente_arrancar" rows="2"></textarea></label>
+<label class="gfi wide">Soporte y mantenimiento incluidos<textarea id="q0306_08" name="03.06 webs_convierten · soporte_mantenimiento_incluidos" rows="2"></textarea></label>
+<label class="gfi">Límites de uso (conversaciones, minutos, agentes)<input type="text" id="q0306_09" name="03.06 webs_convierten · limites_uso_conversaciones_minutos_agentes"></label>
+</div>
+<p class="og">Precio y ventas</p><div class="gf">
+<label class="gfi">Precio de implantación<input type="text" id="q0306_10" name="03.06 webs_convierten · precio_implantacion"></label>
+<label class="gfi">Cuota mensual<input type="text" id="q0306_11" name="03.06 webs_convierten · cuota_mensual"></label>
+<label class="gfi">Precio medio que paga realmente el cliente<input type="text" id="q0306_12" name="03.06 webs_convierten · precio_medio_paga_realmente_cliente"></label>
+<label class="gfi">Descuento máximo permitido<input type="text" id="q0306_13" name="03.06 webs_convierten · descuento_maximo_permitido"></label>
+<label class="gfi">Permanencia mínima<input type="text" id="q0306_14" name="03.06 webs_convierten · permanencia_minima"></label>
+<label class="gfi wide">Costes variables que paga el cliente (minutos, mensajes, licencias)<textarea id="q0306_15" name="03.06 webs_convierten · costes_variables_paga_cliente_minutos_mensajes" rows="2"></textarea></label>
+<label class="gfi">Formas de pago<input type="text" id="q0306_16" name="03.06 webs_convierten · formas_pago"></label>
+<label class="gfi">Ventas al mes (media de los últimos 6 meses)<input type="text" id="q0306_17" name="03.06 webs_convierten · ventas_mes_media_ultimos_6_meses"></label>
+<label class="gfi">Clientes activos con este servicio<input type="text" id="q0306_18" name="03.06 webs_convierten · clientes_activos_este_servicio"></label>
+<label class="gfi wide">Bajas en los últimos 6 meses y motivo<textarea id="q0306_19" name="03.06 webs_convierten · bajas_ultimos_6_meses_motivo" rows="2"></textarea></label>
+<label class="gfi">Para quién se vende<select id="q0306_20" name="03.06 webs_convierten · quien_vende"><option value="">Elige</option><option>Autónomos</option><option>Pymes</option><option>Empresas medianas</option><option>Varios tamaños</option><option>Ya no se vende</option></select></label>
+</div>
+<p class="og">Cómo se vende</p><div class="gf">
+<label class="gfi wide">Por qué lo compran<textarea id="q0306_21" name="03.06 webs_convierten · compran" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones propias de este servicio<textarea id="q0306_22" name="03.06 webs_convierten · objeciones_propias_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Diferencia frente a servicios parecidos de la competencia<textarea id="q0306_23" name="03.06 webs_convierten · diferencia_frente_servicios_parecidos_competencia" rows="2"></textarea></label>
+<label class="gfi wide">Resultados y testimonios citables (con permiso)<textarea id="q0306_24" name="03.06 webs_convierten · resultados_testimonios_citables_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Qué no se debe prometer de este servicio<textarea id="q0306_25" name="03.06 webs_convierten · debe_prometer_este_servicio" rows="2"></textarea></label>
+<label class="gfi wide">Siguiente servicio que se recomienda al cliente<textarea id="q0306_26" name="03.06 webs_convierten · siguiente_servicio_recomienda_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles (demo grabada, presentación, enlace de pago)<textarea id="q0306_27" name="03.06 webs_convierten · materiales_disponibles_demo_grabada_presentacion_enlace" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0306_28" name="03.06 webs_convierten · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+</section>
+<section class="block" id="b04" data-b="4">
+<div class="bhead"><span class="bnum">04</span><div><h2>Oferta, precios y condiciones</h2><p class="bintro">Lo que el equipo de cierre presentaría y en qué condiciones.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0401"><span class="qc">04.01</span><span class="qt">¿En qué servicios y planes actuaría el equipo de cierre, por orden de prioridad?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0401" name="04.01 servicios_planes_actuaria_equipo_cierre_orden" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0402"><span class="qc">04.02</span><span class="qt">Vuestra web dice que no hay precio fijo y que los planes son orientativos. ¿Qué horquilla de precio real manejáis en cada plan, en implantación y en cuota mensual?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0402" name="04.02 vuestra_web_dice_hay_precio_fijo" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0403"><span class="qc">04.03</span><span class="qt">¿Qué descuento máximo se puede aplicar y quién lo autoriza?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0403" name="04.03 descuento_maximo_puede_aplicar_quien_autoriza" required>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0404"><span class="qc">04.04</span><span class="qt">¿Tenéis promociones, packs o combinaciones de servicios? ¿Con qué precio?</span></label>
+<p class="qh">Por ejemplo, web + automatización + agente de IA.</p>
+<textarea id="q0404" name="04.04 teneis_promociones_packs_combinaciones_servicios_precio" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0405"><span class="qc">04.05</span><span class="qt">¿Hay permanencia mínima? ¿Qué pasa si el cliente se da de baja antes?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0405" name="04.05 hay_permanencia_minima_pasa_cliente_da" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0406"><span class="qc">04.06</span><span class="qt">¿El precio cambia según el sector o el tamaño de la empresa?</span></label>
+<input type="text" id="q0406" name="04.06 precio_cambia_segun_sector_tamano_empresa">
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0407"><span class="qc">04.07</span><span class="qt">¿Qué extras de pago existen?</span></label>
+<p class="qh">Horas de desarrollo, integraciones a medida, minutos de voz, mensajes de WhatsApp, cambios en la web u otros.</p>
+<textarea id="q0407" name="04.07 extras_pago_existen" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0408"><span class="qc">04.08</span><span class="qt">¿Tenéis previsto cambiar precios o servicios en los próximos 6 meses?</span></label>
+<input type="text" id="q0408" name="04.08 teneis_previsto_cambiar_precios_servicios_proximos">
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0409"><span class="qc">04.09</span><span class="qt">¿Vendéis fuera de Cataluña o de España? ¿Con qué precios y en qué idioma?</span></label>
+<input type="text" id="q0409" name="04.09 vendeis_fuera_cataluna_espana_precios_idioma">
+</div>
+</section>
+<section class="block" id="b05" data-b="5">
+<div class="bhead"><span class="bnum">05</span><div><h2>Qué recibe el cliente</h2><p class="bintro">Lo que el comercial tiene que poder explicar con precisión.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0501"><span class="qc">05.01</span><span class="qt">Pasos de la implantación, desde la firma hasta que el sistema funciona</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0501" name="05.01 pasos_implantacion_desde_firma_hasta_sistema" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0502"><span class="qc">05.02</span><span class="qt">Vuestra web habla de 2 semanas de implantación. ¿Es el plazo real? ¿De qué depende?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0502" name="05.02 vuestra_web_habla_2_semanas_implantacion" required>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0503"><span class="qc">05.03</span><span class="qt">¿Qué tiene que aportar o hacer el cliente durante la implantación?</span></label>
+<p class="qh">Accesos, información de la empresa, horas de reunión, número de WhatsApp, revisiones…</p>
+<textarea id="q0503" name="05.03 tiene_aportar_hacer_cliente_durante_implantacion" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0504"><span class="qc">05.04</span><span class="qt">¿Quién hace la implantación y quién da el soporte después?</span></label>
+<textarea id="q0504" name="05.04 quien_hace_implantacion_quien_da_soporte" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0505"><span class="qc">05.05</span><span class="qt">Formación al cliente: qué incluye y cuánto dura</span></label>
+<textarea id="q0505" name="05.05 formacion_cliente_incluye_cuanto_dura" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0506"><span class="qc">05.06</span><span class="qt">Si el cliente se da de baja, ¿qué se queda: la web, el CRM, los datos, el número de WhatsApp, las automatizaciones?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0506" name="05.06 cliente_da_baja_queda_web_crm" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0507"><span class="qc">05.07</span><span class="qt">¿Qué pasa si el agente responde mal o el sistema falla? ¿Cómo y en cuánto tiempo lo resolvéis?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0507" name="05.07 pasa_agente_responde_mal_sistema_falla" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0508"><span class="qc">05.08</span><span class="qt">¿Qué métricas e informes recibe el cliente y cada cuánto?</span></label>
+<textarea id="q0508" name="05.08 metricas_e_informes_recibe_cliente_cada" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b06" data-b="6">
+<div class="bhead"><span class="bnum">06</span><div><h2>Tecnología, cumplimiento y garantías</h2><p class="bintro">Necesitamos saber exactamente qué se puede afirmar en una llamada y con qué documento lo respaldamos.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0601"><span class="qc">06.01</span><span class="qt">¿Sobre qué plataformas y herramientas montáis los sistemas?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Por ejemplo: GoHighLevel, Make, n8n, Zapier, proveedor de voz, modelos de IA, CRM.</p>
+<textarea id="q0601" name="06.01 sobre_plataformas_herramientas_montais_sistemas" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q0602"><span class="qc">06.02</span><span class="qt">¿Usáis la API oficial de WhatsApp Business? ¿Con qué proveedor?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q0602" name="06.02 usais_api_oficial_whatsapp_business_proveedor" required>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0603"><span class="qc">06.03</span><span class="qt">¿Quién figura como responsable y quién como encargado del tratamiento de los datos de los clientes finales? ¿Firmáis contrato de encargo de tratamiento con cada cliente?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0603" name="06.03 quien_figura_como_responsable_quien_como" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0604"><span class="qc">06.04</span><span class="qt">¿Los agentes informan al usuario de que está hablando con una IA? ¿El agente de voz avisa si graba la llamada?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Obligaciones de transparencia del AI Act y de protección de datos.</p>
+<textarea id="q0604" name="06.04 agentes_informan_usuario_esta_hablando_ia" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0605"><span class="qc">06.05</span><span class="qt">¿De dónde sale la cifra de +80 % de probabilidad de contactar al lead en los primeros minutos? ¿Hay una fuente que podamos citar?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0605" name="06.05 donde_sale_cifra_80_probabilidad_contactar" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0606"><span class="qc">06.06</span><span class="qt">La calculadora de ROI aplica una mejora del +24 % y estima un ROI del +411 % a 12 meses. ¿En qué datos se basa? ¿Lo habéis medido en algún cliente?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0606" name="06.06 calculadora_roi_aplica_mejora_24_estima" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0607"><span class="qc">06.07</span><span class="qt">¿Qué garantía, periodo de prueba o política de devolución ofrecéis?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0607" name="06.07 garantia_periodo_prueba_politica_devolucion_ofreceis" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0608"><span class="qc">06.08</span><span class="qt">¿Qué incluye exactamente el «SLA garantizado» del plan Enterprise?</span></label>
+<textarea id="q0608" name="06.08 incluye_exactamente_sla_garantizado_plan_enterprise" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b07" data-b="7">
+<div class="bhead"><span class="bnum">07</span><div><h2>El cliente ideal</h2><p class="bintro">Quién os contrata, por qué lo hace y por qué no.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0701"><span class="qc">07.01</span><span class="qt">¿Quién os contrata hoy? Sector, tamaño de empresa, cargo de quien decide y ubicación</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0701" name="07.01 quien_contrata_sector_tamano_empresa_cargo" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0702"><span class="qc">07.02</span><span class="qt">¿Cuáles son los motivos principales por los que os contratan?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Leads que se pierden, llamadas sin atender, falta de tiempo, crecer sin contratar personal…</p>
+<textarea id="q0702" name="07.02 cuales_son_motivos_principales_contratan" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0703"><span class="qc">07.03</span><span class="qt">¿Qué quiere haber conseguido el cliente 6 meses después de la implantación?</span></label>
+<textarea id="q0703" name="07.03 quiere_haber_conseguido_cliente_6_meses" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0704"><span class="qc">07.04</span><span class="qt">¿A quién no debemos ofrecer nunca vuestros servicios? Criterios de descarte</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0704" name="07.04 quien_debemos_ofrecer_nunca_vuestros_servicios" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0705"><span class="qc">07.05</span><span class="qt">¿Cuánto tarda en decidirse un cliente y quién más interviene en la decisión?</span></label>
+<textarea id="q0705" name="07.05 cuanto_tarda_decidirse_cliente_quien_mas" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0706"><span class="qc">07.06</span><span class="qt">¿Cuáles son las 3 a 5 dudas o miedos más frecuentes antes de contratar?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0706" name="07.06 cuales_son_3_5_dudas_miedos" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0707"><span class="qc">07.07</span><span class="qt">¿Por qué se pierden las ventas que se pierden?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0707" name="07.07 pierden_ventas_pierden" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0708"><span class="qc">07.08</span><span class="qt">¿Quiénes son vuestros competidores principales y qué os diferencia de ellos?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0708" name="07.08 quienes_son_vuestros_competidores_principales_diferencia" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0709"><span class="qc">07.09</span><span class="qt">¿Qué datos de mercado usáis al presentar vuestros servicios y de qué fuente salen?</span></label>
+<textarea id="q0709" name="07.09 datos_mercado_usais_presentar_vuestros_servicios" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b08" data-b="8">
+<div class="bhead"><span class="bnum">08</span><div><h2>Sectores prioritarios</h2><p class="bintro">En vuestra web y vuestro blog aparecen clínicas, inmobiliarias, reformas y deporte. Queremos saber dónde funcionáis mejor.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0801"><span class="qc">08.01</span><span class="qt">¿Cuántos clientes tenéis en cada sector?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Clínicas estéticas o dentales, inmobiliarias, reformas, deporte y otros.</p>
+<textarea id="q0801" name="08.01 cuantos_clientes_teneis_cada_sector" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0802"><span class="qc">08.02</span><span class="qt">¿En qué sectores os resulta más fácil cerrar y en cuáles más difícil? ¿Por qué?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0802" name="08.02 sectores_resulta_mas_facil_cerrar_cuales" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q0803"><span class="qc">08.03</span><span class="qt">Ticket medio por sector: implantación y cuota mensual</span></label>
+<input type="text" id="q0803" name="08.03 ticket_medio_sector_implantacion_cuota_mensual">
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0804"><span class="qc">08.04</span><span class="qt">¿Quién decide la compra en cada sector?</span></label>
+<p class="qh">Dueño, gerente, dirección comercial, recepción, socios…</p>
+<textarea id="q0804" name="08.04 quien_decide_compra_cada_sector" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0805"><span class="qc">08.05</span><span class="qt">Objeciones propias de cada sector y cómo las respondéis</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0805" name="08.05 objeciones_propias_cada_sector_como_respondeis" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q0806"><span class="qc">08.06</span><span class="qt">OSE Barcelona: ¿qué resultados concretos ha tenido desde la implantación? ¿Podemos citarlo?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q0806" name="08.06 ose_barcelona_resultados_concretos_ha_tenido" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0807"><span class="qc">08.07</span><span class="qt">¿Tenéis listados de empresas para prospección? ¿Cuántas, de qué sectores y zonas, y en qué formato?</span></label>
+<textarea id="q0807" name="08.07 teneis_listados_empresas_prospeccion_cuantas_sectores" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0808"><span class="qc">08.08</span><span class="qt">¿Queréis que contactemos en frío a empresas? ¿Sectores prioritarios o excluidos?</span></label>
+<textarea id="q0808" name="08.08 quereis_contactemos_frio_empresas_sectores_prioritarios" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q0809"><span class="qc">08.09</span><span class="qt">¿Vuestros clientes han usado ayudas o subvenciones de digitalización para pagar vuestros servicios?</span></label>
+<textarea id="q0809" name="08.09 vuestros_clientes_han_usado_ayudas_subvenciones" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b09" data-b="9">
+<div class="bhead"><span class="bnum">09</span><div><h2>Otras líneas de negocio</h2><p class="bintro">Una ficha por cada línea que no está en el catálogo: qué es, cómo se contrata y si tiene sentido trabajarla con un equipo de cierre. Si tenéis alguna línea más, usad las fichas de «Otra línea».</p></div></div>
+<details class="q f" data-req="0" data-type="f" data-nf="12" open><summary class="ql"><span class="qc">09.01</span><span class="qt">Mantenimiento y soporte mensual</span><span class="fc">0/12</span></summary>
+<p class="og">La línea</p><div class="gf">
+<label class="gfi wide">Qué es y qué recibe el cliente<textarea id="q0901_01" name="09.01 mantenimiento_soporte_mensual · recibe_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién se dirige y qué requisitos tiene que cumplir el cliente<textarea id="q0901_02" name="09.01 mantenimiento_soporte_mensual · quien_dirige_requisitos_tiene_cumplir_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Cómo se vende y se contrata hoy<textarea id="q0901_03" name="09.01 mantenimiento_soporte_mensual · como_vende_contrata" rows="2"></textarea></label>
+<label class="gfi">Precio o modelo de ingresos<input type="text" id="q0901_04" name="09.01 mantenimiento_soporte_mensual · precio_modelo_ingresos"></label>
+<label class="gfi wide">Quién decide la compra y cuánto dura la operación<textarea id="q0901_05" name="09.01 mantenimiento_soporte_mensual · quien_decide_compra_cuanto_dura_operacion" rows="2"></textarea></label>
+</div>
+<p class="og">Volumen y venta</p><div class="gf">
+<label class="gfi">Operaciones o clientes al año<input type="text" id="q0901_06" name="09.01 mantenimiento_soporte_mensual · operaciones_clientes_ano"></label>
+<label class="gfi">Ingresos aproximados al año<input type="text" id="q0901_07" name="09.01 mantenimiento_soporte_mensual · ingresos_aproximados_ano"></label>
+<label class="gfi wide">Clientes o casos que podemos citar (con permiso)<textarea id="q0901_08" name="09.01 mantenimiento_soporte_mensual · clientes_casos_podemos_citar_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones habituales<textarea id="q0901_09" name="09.01 mantenimiento_soporte_mensual · objeciones_habituales" rows="2"></textarea></label>
+<label class="gfi wide">¿Genera ventas de otros servicios? ¿Cuántas?<textarea id="q0901_10" name="09.01 mantenimiento_soporte_mensual · genera_ventas_otros_servicios_cuantas" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles<textarea id="q0901_11" name="09.01 mantenimiento_soporte_mensual · materiales_disponibles" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0901_12" name="09.01 mantenimiento_soporte_mensual · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="12"><summary class="ql"><span class="qc">09.02</span><span class="qt">Consultoría o auditoría de procesos</span><span class="fc">0/12</span></summary>
+<p class="og">La línea</p><div class="gf">
+<label class="gfi wide">Qué es y qué recibe el cliente<textarea id="q0902_01" name="09.02 consultoria_auditoria_procesos · recibe_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién se dirige y qué requisitos tiene que cumplir el cliente<textarea id="q0902_02" name="09.02 consultoria_auditoria_procesos · quien_dirige_requisitos_tiene_cumplir_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Cómo se vende y se contrata hoy<textarea id="q0902_03" name="09.02 consultoria_auditoria_procesos · como_vende_contrata" rows="2"></textarea></label>
+<label class="gfi">Precio o modelo de ingresos<input type="text" id="q0902_04" name="09.02 consultoria_auditoria_procesos · precio_modelo_ingresos"></label>
+<label class="gfi wide">Quién decide la compra y cuánto dura la operación<textarea id="q0902_05" name="09.02 consultoria_auditoria_procesos · quien_decide_compra_cuanto_dura_operacion" rows="2"></textarea></label>
+</div>
+<p class="og">Volumen y venta</p><div class="gf">
+<label class="gfi">Operaciones o clientes al año<input type="text" id="q0902_06" name="09.02 consultoria_auditoria_procesos · operaciones_clientes_ano"></label>
+<label class="gfi">Ingresos aproximados al año<input type="text" id="q0902_07" name="09.02 consultoria_auditoria_procesos · ingresos_aproximados_ano"></label>
+<label class="gfi wide">Clientes o casos que podemos citar (con permiso)<textarea id="q0902_08" name="09.02 consultoria_auditoria_procesos · clientes_casos_podemos_citar_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones habituales<textarea id="q0902_09" name="09.02 consultoria_auditoria_procesos · objeciones_habituales" rows="2"></textarea></label>
+<label class="gfi wide">¿Genera ventas de otros servicios? ¿Cuántas?<textarea id="q0902_10" name="09.02 consultoria_auditoria_procesos · genera_ventas_otros_servicios_cuantas" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles<textarea id="q0902_11" name="09.02 consultoria_auditoria_procesos · materiales_disponibles" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0902_12" name="09.02 consultoria_auditoria_procesos · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="12"><summary class="ql"><span class="qc">09.03</span><span class="qt">Webs sin automatización</span><span class="fc">0/12</span></summary>
+<p class="og">La línea</p><div class="gf">
+<label class="gfi wide">Qué es y qué recibe el cliente<textarea id="q0903_01" name="09.03 webs_sin_automatizacion · recibe_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién se dirige y qué requisitos tiene que cumplir el cliente<textarea id="q0903_02" name="09.03 webs_sin_automatizacion · quien_dirige_requisitos_tiene_cumplir_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Cómo se vende y se contrata hoy<textarea id="q0903_03" name="09.03 webs_sin_automatizacion · como_vende_contrata" rows="2"></textarea></label>
+<label class="gfi">Precio o modelo de ingresos<input type="text" id="q0903_04" name="09.03 webs_sin_automatizacion · precio_modelo_ingresos"></label>
+<label class="gfi wide">Quién decide la compra y cuánto dura la operación<textarea id="q0903_05" name="09.03 webs_sin_automatizacion · quien_decide_compra_cuanto_dura_operacion" rows="2"></textarea></label>
+</div>
+<p class="og">Volumen y venta</p><div class="gf">
+<label class="gfi">Operaciones o clientes al año<input type="text" id="q0903_06" name="09.03 webs_sin_automatizacion · operaciones_clientes_ano"></label>
+<label class="gfi">Ingresos aproximados al año<input type="text" id="q0903_07" name="09.03 webs_sin_automatizacion · ingresos_aproximados_ano"></label>
+<label class="gfi wide">Clientes o casos que podemos citar (con permiso)<textarea id="q0903_08" name="09.03 webs_sin_automatizacion · clientes_casos_podemos_citar_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones habituales<textarea id="q0903_09" name="09.03 webs_sin_automatizacion · objeciones_habituales" rows="2"></textarea></label>
+<label class="gfi wide">¿Genera ventas de otros servicios? ¿Cuántas?<textarea id="q0903_10" name="09.03 webs_sin_automatizacion · genera_ventas_otros_servicios_cuantas" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles<textarea id="q0903_11" name="09.03 webs_sin_automatizacion · materiales_disponibles" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0903_12" name="09.03 webs_sin_automatizacion · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="12"><summary class="ql"><span class="qc">09.04</span><span class="qt">Marca blanca para otras agencias</span><span class="fc">0/12</span></summary>
+<p class="og">La línea</p><div class="gf">
+<label class="gfi wide">Qué es y qué recibe el cliente<textarea id="q0904_01" name="09.04 marca_blanca_otras_agencias · recibe_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién se dirige y qué requisitos tiene que cumplir el cliente<textarea id="q0904_02" name="09.04 marca_blanca_otras_agencias · quien_dirige_requisitos_tiene_cumplir_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Cómo se vende y se contrata hoy<textarea id="q0904_03" name="09.04 marca_blanca_otras_agencias · como_vende_contrata" rows="2"></textarea></label>
+<label class="gfi">Precio o modelo de ingresos<input type="text" id="q0904_04" name="09.04 marca_blanca_otras_agencias · precio_modelo_ingresos"></label>
+<label class="gfi wide">Quién decide la compra y cuánto dura la operación<textarea id="q0904_05" name="09.04 marca_blanca_otras_agencias · quien_decide_compra_cuanto_dura_operacion" rows="2"></textarea></label>
+</div>
+<p class="og">Volumen y venta</p><div class="gf">
+<label class="gfi">Operaciones o clientes al año<input type="text" id="q0904_06" name="09.04 marca_blanca_otras_agencias · operaciones_clientes_ano"></label>
+<label class="gfi">Ingresos aproximados al año<input type="text" id="q0904_07" name="09.04 marca_blanca_otras_agencias · ingresos_aproximados_ano"></label>
+<label class="gfi wide">Clientes o casos que podemos citar (con permiso)<textarea id="q0904_08" name="09.04 marca_blanca_otras_agencias · clientes_casos_podemos_citar_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones habituales<textarea id="q0904_09" name="09.04 marca_blanca_otras_agencias · objeciones_habituales" rows="2"></textarea></label>
+<label class="gfi wide">¿Genera ventas de otros servicios? ¿Cuántas?<textarea id="q0904_10" name="09.04 marca_blanca_otras_agencias · genera_ventas_otros_servicios_cuantas" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles<textarea id="q0904_11" name="09.04 marca_blanca_otras_agencias · materiales_disponibles" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0904_12" name="09.04 marca_blanca_otras_agencias · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="13"><summary class="ql"><span class="qc">09.05</span><span class="qt">Otra línea de negocio (1)</span><span class="fc">0/13</span></summary>
+<p class="og">La línea</p><div class="gf">
+<label class="gfi wide">Nombre de la línea<input type="text" id="q0905_01" name="09.05 otra_linea_negocio_1 · nombre_linea"></label>
+<label class="gfi wide">Qué es y qué recibe el cliente<textarea id="q0905_02" name="09.05 otra_linea_negocio_1 · recibe_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién se dirige y qué requisitos tiene que cumplir el cliente<textarea id="q0905_03" name="09.05 otra_linea_negocio_1 · quien_dirige_requisitos_tiene_cumplir_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Cómo se vende y se contrata hoy<textarea id="q0905_04" name="09.05 otra_linea_negocio_1 · como_vende_contrata" rows="2"></textarea></label>
+<label class="gfi">Precio o modelo de ingresos<input type="text" id="q0905_05" name="09.05 otra_linea_negocio_1 · precio_modelo_ingresos"></label>
+<label class="gfi wide">Quién decide la compra y cuánto dura la operación<textarea id="q0905_06" name="09.05 otra_linea_negocio_1 · quien_decide_compra_cuanto_dura_operacion" rows="2"></textarea></label>
+</div>
+<p class="og">Volumen y venta</p><div class="gf">
+<label class="gfi">Operaciones o clientes al año<input type="text" id="q0905_07" name="09.05 otra_linea_negocio_1 · operaciones_clientes_ano"></label>
+<label class="gfi">Ingresos aproximados al año<input type="text" id="q0905_08" name="09.05 otra_linea_negocio_1 · ingresos_aproximados_ano"></label>
+<label class="gfi wide">Clientes o casos que podemos citar (con permiso)<textarea id="q0905_09" name="09.05 otra_linea_negocio_1 · clientes_casos_podemos_citar_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones habituales<textarea id="q0905_10" name="09.05 otra_linea_negocio_1 · objeciones_habituales" rows="2"></textarea></label>
+<label class="gfi wide">¿Genera ventas de otros servicios? ¿Cuántas?<textarea id="q0905_11" name="09.05 otra_linea_negocio_1 · genera_ventas_otros_servicios_cuantas" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles<textarea id="q0905_12" name="09.05 otra_linea_negocio_1 · materiales_disponibles" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0905_13" name="09.05 otra_linea_negocio_1 · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+<details class="q f" data-req="0" data-type="f" data-nf="13"><summary class="ql"><span class="qc">09.06</span><span class="qt">Otra línea de negocio (2)</span><span class="fc">0/13</span></summary>
+<p class="og">La línea</p><div class="gf">
+<label class="gfi wide">Nombre de la línea<input type="text" id="q0906_01" name="09.06 otra_linea_negocio_2 · nombre_linea"></label>
+<label class="gfi wide">Qué es y qué recibe el cliente<textarea id="q0906_02" name="09.06 otra_linea_negocio_2 · recibe_cliente" rows="2"></textarea></label>
+<label class="gfi wide">A quién se dirige y qué requisitos tiene que cumplir el cliente<textarea id="q0906_03" name="09.06 otra_linea_negocio_2 · quien_dirige_requisitos_tiene_cumplir_cliente" rows="2"></textarea></label>
+<label class="gfi wide">Cómo se vende y se contrata hoy<textarea id="q0906_04" name="09.06 otra_linea_negocio_2 · como_vende_contrata" rows="2"></textarea></label>
+<label class="gfi">Precio o modelo de ingresos<input type="text" id="q0906_05" name="09.06 otra_linea_negocio_2 · precio_modelo_ingresos"></label>
+<label class="gfi wide">Quién decide la compra y cuánto dura la operación<textarea id="q0906_06" name="09.06 otra_linea_negocio_2 · quien_decide_compra_cuanto_dura_operacion" rows="2"></textarea></label>
+</div>
+<p class="og">Volumen y venta</p><div class="gf">
+<label class="gfi">Operaciones o clientes al año<input type="text" id="q0906_07" name="09.06 otra_linea_negocio_2 · operaciones_clientes_ano"></label>
+<label class="gfi">Ingresos aproximados al año<input type="text" id="q0906_08" name="09.06 otra_linea_negocio_2 · ingresos_aproximados_ano"></label>
+<label class="gfi wide">Clientes o casos que podemos citar (con permiso)<textarea id="q0906_09" name="09.06 otra_linea_negocio_2 · clientes_casos_podemos_citar_permiso" rows="2"></textarea></label>
+<label class="gfi wide">Objeciones habituales<textarea id="q0906_10" name="09.06 otra_linea_negocio_2 · objeciones_habituales" rows="2"></textarea></label>
+<label class="gfi wide">¿Genera ventas de otros servicios? ¿Cuántas?<textarea id="q0906_11" name="09.06 otra_linea_negocio_2 · genera_ventas_otros_servicios_cuantas" rows="2"></textarea></label>
+<label class="gfi wide">Materiales disponibles<textarea id="q0906_12" name="09.06 otra_linea_negocio_2 · materiales_disponibles" rows="2"></textarea></label>
+<label class="gfi">¿Incluir en la colaboración?<select id="q0906_13" name="09.06 otra_linea_negocio_2 · incluir_colaboracion"><option value="">Elige</option><option>Sí</option><option>A valorar</option><option>No</option></select></label>
+</div>
+</details>
+</section>
+<section class="block" id="b10" data-b="10">
+<div class="bhead"><span class="bnum">10</span><div><h2>Captación y leads</h2><p class="bintro">De dónde salen los contactos y cómo nos llegarían.</p></div></div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1001"><span class="qc">10.01</span><span class="qt">¿Cuántos leads o solicitudes de demo entran al mes?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q1001" name="10.01 cuantos_leads_solicitudes_demo_entran_mes" required>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1002"><span class="qc">10.02</span><span class="qt">¿Por qué canales llegan y en qué proporción?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Instagram, LinkedIn, web, Google, referidos, networking, puerta fría…</p>
+<textarea id="q1002" name="10.02 canales_llegan_proporcion" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q1003"><span class="qc">10.03</span><span class="qt">Inversión mensual en publicidad y coste aproximado por lead</span></label>
+<input type="text" id="q1003" name="10.03 inversion_mensual_publicidad_coste_aproximado_lead">
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1004"><span class="qc">10.04</span><span class="qt">¿Qué datos recoge hoy vuestro formulario de contacto?</span></label>
+<textarea id="q1004" name="10.04 datos_recoge_vuestro_formulario_contacto" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="s">
+<label class="ql" for="q1005"><span class="qc">10.05</span><span class="qt">¿El lead da su consentimiento para que le contactemos por teléfono, WhatsApp y email?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<select id="q1005" name="10.05 lead_da_consentimiento_contactemos_telefono_whatsapp" required><option value="">Elige una opción</option><option>Sí, por los tres canales</option><option>Solo por teléfono</option><option>Solo por email</option><option>No lo sabemos</option></select>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1006"><span class="qc">10.06</span><span class="qt">¿Cómo nos pasaríais los leads y cada cuánto?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Acceso al CRM, CSV, notificación automática…</p>
+<textarea id="q1006" name="10.06 como_pasariais_leads_cada_cuanto" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1007"><span class="qc">10.07</span><span class="qt">¿Cuántas personas de los últimos 6 meses pidieron información o una demo y no contrataron?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q1007" name="10.07 cuantas_personas_ultimos_6_meses_pidieron" required>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1008"><span class="qc">10.08</span><span class="qt">¿Cuántos clientes actuales podrían ampliar a otro servicio o a un plan superior?</span></label>
+<p class="qh">Por ejemplo, de web a automatización, o de Essencial a Professional.</p>
+<textarea id="q1008" name="10.08 cuantos_clientes_actuales_podrian_ampliar_otro" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1009"><span class="qc">10.09</span><span class="qt">Campañas en marcha y previstas para los próximos 3 meses</span></label>
+<textarea id="q1009" name="10.09 campanas_marcha_previstas_proximos_3_meses" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1010"><span class="qc">10.10</span><span class="qt">¿Cuántos contactos os traen las calculadoras de ROI y de voz y el blog?</span></label>
+<textarea id="q1010" name="10.10 cuantos_contactos_traen_calculadoras_roi_voz" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q1011"><span class="qc">10.11</span><span class="qt">¿En qué días y horarios responde mejor vuestro público?</span></label>
+<input type="text" id="q1011" name="10.11 dias_horarios_responde_mejor_vuestro_publico">
+</div>
+</section>
+<section class="block" id="b11" data-b="11">
+<div class="bhead"><span class="bnum">11</span><div><h2>Vuestro proceso de venta hoy</h2><p class="bintro">Cómo vendéis ahora, para mejorar sobre lo que ya funciona.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1101"><span class="qc">11.01</span><span class="qt">¿Quién atiende hoy los leads y hace las demos? ¿Cuántas personas y cómo cobran?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1101" name="11.01 quien_atiende_leads_hace_demos_cuantas" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="s">
+<label class="ql" for="q1102"><span class="qc">11.02</span><span class="qt">¿Cuánto tardáis de media en responder a un lead nuevo?</span></label>
+<select id="q1102" name="11.02 cuanto_tardais_media_responder_lead_nuevo"><option value="">Elige una opción</option><option>Menos de 1 hora</option><option>El mismo día</option><option>1–2 días</option><option>Más de 2 días</option></select>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1103"><span class="qc">11.03</span><span class="qt">De cada 10 leads, ¿cuántos llegan a demo y cuántos contratan?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q1103" name="11.03 cada_10_leads_cuantos_llegan_demo" required>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1104"><span class="qc">11.04</span><span class="qt">Pasos de vuestro proceso de venta, desde que entra el lead hasta la firma</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1104" name="11.04 pasos_vuestro_proceso_venta_desde_entra" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1105"><span class="qc">11.05</span><span class="qt">¿Cómo es la demo? Duración, qué se enseña, si se prepara a medida para cada empresa y quién la monta</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1105" name="11.05 como_demo_duracion_ensena_prepara_medida" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="s">
+<label class="ql" for="q1106"><span class="qc">11.06</span><span class="qt">¿Tenéis guion de demo o mensajes tipo por WhatsApp y email?</span></label>
+<select id="q1106" name="11.06 teneis_guion_demo_mensajes_tipo_whatsapp"><option value="">Elige una opción</option><option>Sí, os lo enviamos</option><option>Parcialmente</option><option>No</option></select>
+</div>
+<div class="q" data-req="0" data-type="s">
+<label class="ql" for="q1107"><span class="qc">11.07</span><span class="qt">¿Grabáis las demos y llamadas de venta? ¿Podríamos ver algunas?</span></label>
+<select id="q1107" name="11.07 grabais_demos_llamadas_venta_podriamos_ver"><option value="">Elige una opción</option><option>Sí</option><option>No grabamos</option><option>Grabamos, pero no se pueden compartir</option></select>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1108"><span class="qc">11.08</span><span class="qt">¿Qué CRM usáis? ¿Podríamos tener acceso?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q1108" name="11.08 crm_usais_podriamos_tener_acceso" required>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1109"><span class="qc">11.09</span><span class="qt">¿Habéis trabajado antes con closers, agencias o comerciales a comisión? ¿Qué funcionó y qué no?</span></label>
+<textarea id="q1109" name="11.09 habeis_trabajado_antes_closers_agencias_comerciales" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1110"><span class="qc">11.10</span><span class="qt">¿Cómo debe presentarse el comercial al contactar? ¿En nombre de XBDigital IA, con email o teléfono corporativo?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1110" name="11.10 como_debe_presentarse_comercial_contactar_nombre" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1111"><span class="qc">11.11</span><span class="qt">¿En qué casos debe pasar la conversación a alguien técnico de XBDigital IA?</span></label>
+<p class="qh">Integraciones a medida, plan Enterprise, dudas técnicas o de protección de datos…</p>
+<textarea id="q1111" name="11.11 casos_debe_pasar_conversacion_alguien_tecnico" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b12" data-b="12">
+<div class="bhead"><span class="bnum">12</span><div><h2>Mensaje, objeciones y límites</h2><p class="bintro">Lo que se dice, cómo se responde y lo que no se promete nunca.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1201"><span class="qc">12.01</span><span class="qt">En una frase: ¿por qué una empresa debería trabajar con XBDigital IA y no con otra agencia?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1201" name="12.01 frase_empresa_deberia_trabajar_xbdigital_ia" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1202"><span class="qc">12.02</span><span class="qt">Objeciones habituales y cómo las respondéis</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1202" name="12.02 objeciones_habituales_como_respondeis" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1203"><span class="qc">12.03</span><span class="qt">Preguntas frecuentes que os hacen antes de contratar</span></label>
+<textarea id="q1203" name="12.03 preguntas_frecuentes_hacen_antes_contratar" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1204"><span class="qc">12.04</span><span class="qt">¿Qué no se puede prometer nunca en una llamada?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1204" name="12.04 puede_prometer_nunca_llamada" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1205"><span class="qc">12.05</span><span class="qt">¿Hay palabras o expresiones que no queréis que usemos?</span></label>
+<textarea id="q1205" name="12.05 hay_palabras_expresiones_quereis_usemos" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1206"><span class="qc">12.06</span><span class="qt">¿Qué afirmaciones de vuestra web podemos usar tal cual en las llamadas?</span></label>
+<textarea id="q1206" name="12.06 afirmaciones_vuestra_web_podemos_usar_tal" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b13" data-b="13">
+<div class="bhead"><span class="bnum">13</span><div><h2>Contratación, pagos y cobros</h2><p class="bintro">Cómo paga el cliente y cuándo se da por cerrada una venta.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1301"><span class="qc">13.01</span><span class="qt">Formas de pago de la implantación y de la cuota mensual</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Transferencia, domiciliación, tarjeta, pago fraccionado…</p>
+<textarea id="q1301" name="13.01 formas_pago_implantacion_cuota_mensual" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1302"><span class="qc">13.02</span><span class="qt">Enlaces de pago o pasarela por servicio y plan</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Stripe, domiciliación, transferencia…</p>
+<textarea id="q1302" name="13.02 enlaces_pago_pasarela_servicio_plan" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1303"><span class="qc">13.03</span><span class="qt">¿Hay contrato o condiciones generales que firma el cliente? ¿Podemos verlos?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1303" name="13.03 hay_contrato_condiciones_generales_firma_cliente" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q1304"><span class="qc">13.04</span><span class="qt">¿Pedís señal o pago por adelantado antes de empezar?</span></label>
+<input type="text" id="q1304" name="13.04 pedis_senal_pago_adelantado_antes_empezar">
+</div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1305"><span class="qc">13.05</span><span class="qt">Pasos desde el pago hasta el arranque de la implantación</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1305" name="13.05 pasos_desde_pago_hasta_arranque_implantacion" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1306"><span class="qc">13.06</span><span class="qt">¿Qué pasa si un cliente deja de pagar la cuota?</span></label>
+<textarea id="q1306" name="13.06 pasa_cliente_deja_pagar_cuota" rows="3"></textarea>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1307"><span class="qc">13.07</span><span class="qt">¿Quién factura al cliente y qué IVA se aplica?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q1307" name="13.07 quien_factura_cliente_iva_aplica" required>
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1308"><span class="qc">13.08</span><span class="qt">¿En qué momento consideráis cerrada una venta?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<p class="qh">Firma, pago de la implantación, primera cuota…</p>
+<input type="text" id="q1308" name="13.08 momento_considerais_cerrada_venta" required>
+</div>
+</section>
+<section class="block" id="b14" data-b="14">
+<div class="bhead"><span class="bnum">14</span><div><h2>Prueba social y recursos</h2><p class="bintro">Lo que el equipo puede enseñar y citar.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1401"><span class="qc">14.01</span><span class="qt">Casos y testimonios que podemos citar con nombre: empresa, resultado y permiso</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1401" name="14.01 casos_testimonios_podemos_citar_nombre_empresa" rows="3" required></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1402"><span class="qc">14.02</span><span class="qt">¿Qué vídeos de testimonios o de casos tenéis disponibles?</span></label>
+<textarea id="q1402" name="14.02 videos_testimonios_casos_teneis_disponibles" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1403"><span class="qc">14.03</span><span class="qt">¿Algún cliente aceptaría hablar con un interesado?</span></label>
+<textarea id="q1403" name="14.03 algun_cliente_aceptaria_hablar_interesado" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1404"><span class="qc">14.04</span><span class="qt">Materiales de venta disponibles: presentación, demo grabada, vídeos, agente de prueba</span></label>
+<textarea id="q1404" name="14.04 materiales_venta_disponibles_presentacion_demo_grabada" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="s">
+<label class="ql" for="q1405"><span class="qc">14.05</span><span class="qt">¿Podéis darnos un agente de demostración para enseñarlo en las llamadas?</span></label>
+<select id="q1405" name="14.05 podeis_darnos_agente_demostracion_ensenarlo_llamadas"><option value="">Elige una opción</option><option>Sí</option><option>No</option><option>Solo una demo grabada</option></select>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1406"><span class="qc">14.06</span><span class="qt">Eventos, apariciones en medios o acuerdos que podamos mencionar</span></label>
+<textarea id="q1406" name="14.06 eventos_apariciones_medios_acuerdos_podamos_mencionar" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b15" data-b="15">
+<div class="bhead"><span class="bnum">15</span><div><h2>Cómo trabajaríamos juntos</h2><p class="bintro">Para encajar el equipo de cierre con vuestra forma de trabajar.</p></div></div>
+<div class="q" data-req="1" data-type="a">
+<label class="ql" for="q1501"><span class="qc">15.01</span><span class="qt">¿Qué esperáis conseguir con un equipo de cierre externo?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<textarea id="q1501" name="15.01 esperais_conseguir_equipo_cierre_externo" rows="3" required></textarea>
+</div>
+<div class="q" data-req="1" data-type="c">
+<p class="ql"><span class="qc">15.02</span><span class="qt">¿Dónde actuaría el equipo de cierre?</span><span class="req" title="Imprescindible">Imprescindible</span></p>
+<p class="og">Planes de agentes de IA</p>
+<div class="opts" role="group">
+<label class="opt"><input type="checkbox" id="q1502_1" name="15.02 donde_actuaria_equipo_cierre[]" value="Plan Essencial"><span>Plan Essencial</span></label>
+<label class="opt"><input type="checkbox" id="q1502_2" name="15.02 donde_actuaria_equipo_cierre[]" value="Plan Professional"><span>Plan Professional</span></label>
+<label class="opt"><input type="checkbox" id="q1502_3" name="15.02 donde_actuaria_equipo_cierre[]" value="Plan Enterprise"><span>Plan Enterprise</span></label>
+</div>
+<p class="og">Servicios</p>
+<div class="opts" role="group">
+<label class="opt"><input type="checkbox" id="q1502_4" name="15.02 donde_actuaria_equipo_cierre[]" value="Automatizaciones de procesos"><span>Automatizaciones de procesos</span></label>
+<label class="opt"><input type="checkbox" id="q1502_5" name="15.02 donde_actuaria_equipo_cierre[]" value="Agente de voz con IA"><span>Agente de voz con IA</span></label>
+<label class="opt"><input type="checkbox" id="q1502_6" name="15.02 donde_actuaria_equipo_cierre[]" value="Webs que convierten"><span>Webs que convierten</span></label>
+</div>
+<p class="og">Otras líneas de negocio</p>
+<div class="opts" role="group">
+<label class="opt"><input type="checkbox" id="q1502_7" name="15.02 donde_actuaria_equipo_cierre[]" value="Mantenimiento y soporte mensual"><span>Mantenimiento y soporte mensual</span></label>
+<label class="opt"><input type="checkbox" id="q1502_8" name="15.02 donde_actuaria_equipo_cierre[]" value="Consultoría o auditoría de procesos"><span>Consultoría o auditoría de procesos</span></label>
+<label class="opt"><input type="checkbox" id="q1502_9" name="15.02 donde_actuaria_equipo_cierre[]" value="Webs sin automatización"><span>Webs sin automatización</span></label>
+<label class="opt"><input type="checkbox" id="q1502_10" name="15.02 donde_actuaria_equipo_cierre[]" value="Marca blanca para otras agencias"><span>Marca blanca para otras agencias</span></label>
+<label class="opt"><input type="checkbox" id="q1502_11" name="15.02 donde_actuaria_equipo_cierre[]" value="Otra línea de negocio (1)"><span>Otra línea de negocio (1)</span></label>
+<label class="opt"><input type="checkbox" id="q1502_12" name="15.02 donde_actuaria_equipo_cierre[]" value="Otra línea de negocio (2)"><span>Otra línea de negocio (2)</span></label>
+</div>
+</div>
+<div class="q" data-req="1" data-type="r">
+<p class="ql"><span class="qc">15.03</span><span class="qt">Trabajamos a comisión, entre un 15 % y un 18 % sobre la base imponible de cada venta cerrada, devengada en el momento del cierre, pague el cliente de una vez, a plazos o en cuotas. ¿Os encaja?</span><span class="req" title="Imprescindible">Imprescindible</span></p>
+<div class="opts" role="group">
+<label class="opt"><input type="radio" id="q1503_1" name="15.03 trabajamos_comision_entre_15_18_sobre" value="Sí"><span>Sí</span></label>
+<label class="opt"><input type="radio" id="q1503_2" name="15.03 trabajamos_comision_entre_15_18_sobre" value="Sí, con matices"><span>Sí, con matices</span></label>
+<label class="opt"><input type="radio" id="q1503_3" name="15.03 trabajamos_comision_entre_15_18_sobre" value="No"><span>No</span></label>
+</div>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1504"><span class="qc">15.04</span><span class="qt">En los servicios con cuota mensual, ¿cómo veis que la comisión cubra también una parte de las cuotas durante los primeros meses?</span></label>
+<textarea id="q1504" name="15.04 servicios_cuota_mensual_como_veis_comision" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1505"><span class="qc">15.05</span><span class="qt">Si hay matices sobre el modelo de comisión, contadnos cuáles</span></label>
+<textarea id="q1505" name="15.05 hay_matices_sobre_modelo_comision_contadnos" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1506"><span class="qc">15.06</span><span class="qt">¿Buscáis exclusividad en algún canal, sector o servicio?</span></label>
+<textarea id="q1506" name="15.06 buscais_exclusividad_algun_canal_sector_servicio" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="r">
+<p class="ql"><span class="qc">15.07</span><span class="qt">Muchas empresas que implantan un agente necesitan después a alguien que cierre las citas que agenda. ¿Os interesaría que nos presentemos clientes mutuamente?</span></p>
+<div class="opts" role="group">
+<label class="opt"><input type="radio" id="q1507_1" name="15.07 muchas_empresas_implantan_agente_necesitan_despues" value="Sí"><span>Sí</span></label>
+<label class="opt"><input type="radio" id="q1507_2" name="15.07 muchas_empresas_implantan_agente_necesitan_despues" value="A valorar"><span>A valorar</span></label>
+<label class="opt"><input type="radio" id="q1507_3" name="15.07 muchas_empresas_implantan_agente_necesitan_despues" value="No"><span>No</span></label>
+</div>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1508"><span class="qc">15.08</span><span class="qt">¿Qué informes de seguimiento esperáis y con qué frecuencia?</span></label>
+<textarea id="q1508" name="15.08 informes_seguimiento_esperais_frecuencia" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1509"><span class="qc">15.09</span><span class="qt">Reuniones de seguimiento: frecuencia y quién asistiría por vuestra parte</span></label>
+<textarea id="q1509" name="15.09 reuniones_seguimiento_frecuencia_quien_asistiria_vuestra" rows="3"></textarea>
+</div>
+<div class="q" data-req="0" data-type="t">
+<label class="ql" for="q1510"><span class="qc">15.10</span><span class="qt">¿Cuándo os gustaría empezar?</span></label>
+<input type="text" id="q1510" name="15.10 cuando_gustaria_empezar">
+</div>
+<div class="q" data-req="1" data-type="t">
+<label class="ql" for="q1511"><span class="qc">15.11</span><span class="qt">Si las ventas crecen, ¿cuántas implantaciones al mes podéis asumir sin perder calidad?</span><span class="req" title="Imprescindible">Imprescindible</span></label>
+<input type="text" id="q1511" name="15.11 ventas_crecen_cuantas_implantaciones_mes_podeis" required>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1512"><span class="qc">15.12</span><span class="qt">¿Hay algo más que debamos saber?</span></label>
+<textarea id="q1512" name="15.12 hay_algo_mas_debamos_saber" rows="3"></textarea>
+</div>
+</section>
+<section class="block" id="b16" data-b="16">
+<div class="bhead"><span class="bnum">16</span><div><h2>Documentos y accesos</h2><p class="bintro">Marcad lo que podéis enviarnos. Con esto preparamos los materiales del equipo.</p></div></div>
+<div class="q" data-req="0" data-type="c">
+<p class="ql"><span class="qc">16.01</span><span class="qt">Documentos que podéis enviarnos</span></p>
+<div class="opts" role="group">
+<label class="opt"><input type="checkbox" id="q1601_1" name="16.01 documentos_podeis_enviarnos[]" value="Tarifas reales por plan y servicio"><span>Tarifas reales por plan y servicio</span></label>
+<label class="opt"><input type="checkbox" id="q1601_2" name="16.01 documentos_podeis_enviarnos[]" value="Presentación comercial"><span>Presentación comercial</span></label>
+<label class="opt"><input type="checkbox" id="q1601_3" name="16.01 documentos_podeis_enviarnos[]" value="Demo grabada"><span>Demo grabada</span></label>
+<label class="opt"><input type="checkbox" id="q1601_4" name="16.01 documentos_podeis_enviarnos[]" value="Guion o grabaciones de demos"><span>Guion o grabaciones de demos</span></label>
+<label class="opt"><input type="checkbox" id="q1601_5" name="16.01 documentos_podeis_enviarnos[]" value="Contrato o condiciones generales"><span>Contrato o condiciones generales</span></label>
+<label class="opt"><input type="checkbox" id="q1601_6" name="16.01 documentos_podeis_enviarnos[]" value="Contrato de encargo de tratamiento"><span>Contrato de encargo de tratamiento</span></label>
+<label class="opt"><input type="checkbox" id="q1601_7" name="16.01 documentos_podeis_enviarnos[]" value="Enlaces de pago"><span>Enlaces de pago</span></label>
+<label class="opt"><input type="checkbox" id="q1601_8" name="16.01 documentos_podeis_enviarnos[]" value="Casos y resultados de clientes"><span>Casos y resultados de clientes</span></label>
+<label class="opt"><input type="checkbox" id="q1601_9" name="16.01 documentos_podeis_enviarnos[]" value="Testimonios autorizados (texto o vídeo)"><span>Testimonios autorizados (texto o vídeo)</span></label>
+<label class="opt"><input type="checkbox" id="q1601_10" name="16.01 documentos_podeis_enviarnos[]" value="Objeciones y preguntas frecuentes"><span>Objeciones y preguntas frecuentes</span></label>
+<label class="opt"><input type="checkbox" id="q1601_11" name="16.01 documentos_podeis_enviarnos[]" value="Base de leads no convertidos"><span>Base de leads no convertidos</span></label>
+<label class="opt"><input type="checkbox" id="q1601_12" name="16.01 documentos_podeis_enviarnos[]" value="Listado de empresas para prospección"><span>Listado de empresas para prospección</span></label>
+<label class="opt"><input type="checkbox" id="q1601_13" name="16.01 documentos_podeis_enviarnos[]" value="Acceso al CRM"><span>Acceso al CRM</span></label>
+<label class="opt"><input type="checkbox" id="q1601_14" name="16.01 documentos_podeis_enviarnos[]" value="Agente de demostración"><span>Agente de demostración</span></label>
+<label class="opt"><input type="checkbox" id="q1601_15" name="16.01 documentos_podeis_enviarnos[]" value="Datos fiscales (razón social y NIF)"><span>Datos fiscales (razón social y NIF)</span></label>
+</div>
+</div>
+<div class="q" data-req="0" data-type="a">
+<label class="ql" for="q1602"><span class="qc">16.02</span><span class="qt">¿Cómo y cuándo nos los haréis llegar?</span></label>
+<p class="qh">Carpeta compartida, email…</p>
+<textarea id="q1602" name="16.02 como_cuando_hareis_llegar" rows="3"></textarea>
+</div>
+</section>
+
+<div class="send" id="send">
+  <h2>Enviar el diagnóstico</h2>
+  <p>Cuando lo enviéis, analizamos vuestras respuestas y os devolvemos el informe con nuestra recomendación. Si falta algo imprescindible, os lo indicamos aquí abajo.</p>
+  <div class="row"><button type="submit" class="btn" id="go">Enviar respuestas</button></div>
+  <p class="msg" id="msg"></p>
+  <div class="result" id="result" hidden>
+    <p><strong>Ya casi está.</strong> Copiad las respuestas y enviadlas por WhatsApp al +34 663 347 696 o por email a david@closersearch.com.</p>
+    <textarea id="out" readonly aria-label="Respuestas para copiar"></textarea>
+    <div class="row">
+      <button type="button" class="btn" id="copy">Copiar respuestas</button>
+      <a class="btn ghost" id="wa" href="https://wa.me/34663347696" target="_blank" rel="noopener">Abrir WhatsApp</a>
+    </div>
+    <p class="msg" id="cmsg">Si el botón de copiar no funciona, seleccionad el texto del recuadro y copiadlo.</p>
+  </div>
+</div>
+</form>
+
+<div class="sign">
+  <b>David Martínez-Bayer</b>
+  <p class="muted">CEO y Fundador · Closer Search<br>david@closersearch.com · +34 663 347 696 · www.closersearch.com</p>
+</div>
+<footer>Closer Search · Documento confidencial. La información que nos facilitéis se usa solo para evaluar la colaboración con XBDigital IA.</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='cs-diag-xbdigital-v1', f=document.getElementById('f');
+  var qs=[].slice.call(document.querySelectorAll('.q'));
+  function store(){try{return window.localStorage}catch(e){return null}}
+  function answered(q){
+    var t=q.dataset.type;
+    if(t==='r'||t==='c') return !!q.querySelector('input:checked');
+    if(t==='f'){
+      var all=q.querySelectorAll('input,select,textarea'), k=0;
+      [].forEach.call(all,function(x){if(x.value.trim())k++});
+      var c=q.querySelector('.fc'); c.textContent=k+'/'+all.length; c.classList.toggle('full',k===all.length);
+      return k>=Math.ceil(all.length/2);
+    }
+    var el=q.querySelector('input,textarea,select'); return !!(el&&el.value.trim());
+  }
+  function progress(){
+    var n=0; qs.forEach(function(q){ if(answered(q)){n++; q.classList.remove('missing');} });
+    var p=Math.round(n/qs.length*100);
+    document.getElementById('fill').style.width=p+'%';
+    document.getElementById('pct').textContent=p+' %';
+    [].slice.call(document.querySelectorAll('.block')).forEach(function(b){
+      var bq=b.querySelectorAll('.q'), k=0; [].forEach.call(bq,function(q){if(answered(q))k++});
+      var nb=document.querySelector('.navb[data-b="'+b.dataset.b+'"]');
+      document.getElementById('np'+b.dataset.b).textContent=k+'/'+bq.length;
+      nb.classList.toggle('done',k===bq.length);
+    });
+  }
+  function collect(){
+    var d={}; [].forEach.call(f.elements,function(el){
+      if(!el.name||el.name==='form-name'||el.name==='bot-field') return;
+      if(el.type==='radio'||el.type==='checkbox'){ if(!el.checked) return; (d[el.name]=d[el.name]||[]).push(el.value); }
+      else d[el.name]=el.value;
+    }); return d;
+  }
+  function save(){
+    var s=store(); if(!s) return;
+    try{ s.setItem(KEY,JSON.stringify(collect()));
+      document.getElementById('saved').textContent='Guardado '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}); }catch(e){}
+  }
+  function load(){
+    var s=store(); if(!s) return; var d;
+    try{ d=JSON.parse(s.getItem(KEY)||'null'); }catch(e){ d=null; }
+    if(!d) return;
+    [].forEach.call(f.elements,function(el){
+      if(!(el.name in d)) return; var v=d[el.name];
+      if(el.type==='radio'||el.type==='checkbox') el.checked=Array.isArray(v)&&v.indexOf(el.value)>-1;
+      else el.value=v;
+    });
+    document.getElementById('saved').textContent='Respuestas recuperadas';
+  }
+  var t; f.addEventListener('input',function(){ progress(); clearTimeout(t); t=setTimeout(save,400); });
+  f.addEventListener('change',function(){ progress(); save(); });
+
+  function text(){
+    var lines=['DIAGNÓSTICO DE VIABILIDAD · XBDIGITAL IA',''];
+    [].slice.call(document.querySelectorAll('.block')).forEach(function(b){
+      lines.push('== '+b.querySelector('.bnum').textContent+' · '+b.querySelector('h2').textContent+' ==');
+      [].forEach.call(b.querySelectorAll('.q'),function(q){
+        var code=q.querySelector('.qc').textContent, lab=q.querySelector('.qt').textContent, t=q.dataset.type, v;
+        if(t==='r'||t==='c') v=[].map.call(q.querySelectorAll('input:checked'),function(i){return i.value}).join(', ');
+        else if(t==='f') v=[].map.call(q.querySelectorAll('.gfi'),function(l){var x=l.querySelector('input,select,textarea');return x.value.trim()?'   - '+l.firstChild.textContent.trim()+': '+x.value.trim():''}).filter(Boolean).join('\n');
+        else v=q.querySelector('input,textarea,select').value.trim();
+        if(t==='f'&&v) v='\n'+v;
+        lines.push(code+' '+lab); lines.push('→ '+(v||'(sin respuesta)')); lines.push('');
+      });
+    });
+    return lines.join('\n');
+  }
+
+  var hosted=/closersearch\.com$|netlify\.app$/.test(location.hostname);
+  f.addEventListener('submit',function(ev){
+    var miss=qs.filter(function(q){return q.dataset.req==='1'&&!answered(q)});
+    var msg=document.getElementById('msg');
+    qs.forEach(function(q){q.classList.remove('missing')});
+    if(miss.length){
+      ev.preventDefault();
+      miss.forEach(function(q){q.classList.add('missing')});
+      msg.className='msg err';
+      msg.textContent='Faltan '+miss.length+' preguntas imprescindibles, marcadas en rojo. La primera es la '+miss[0].querySelector('.qc').textContent+'.';
+      miss[0].scrollIntoView({behavior:'smooth',block:'center'});
+      var el=miss[0].querySelector('input,textarea,select'); if(el) setTimeout(function(){el.focus({preventScroll:true})},400);
+      return;
+    }
+    if(hosted){ save(); return; }
+    ev.preventDefault();
+    msg.className='msg'; msg.textContent='';
+    var out=document.getElementById('out'); out.value=text();
+    var r=document.getElementById('result'); r.hidden=false;
+    document.getElementById('wa').href='https://wa.me/34663347696?text='+encodeURIComponent('Hola David, os enviamos las respuestas del diagnóstico de XBDigital IA:');
+    r.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  document.getElementById('copy').addEventListener('click',function(){
+    var out=document.getElementById('out'), c=document.getElementById('cmsg');
+    function sel(){ out.focus(); out.select(); c.textContent='Texto seleccionado: copiadlo con Ctrl+C o mantened pulsado en el móvil.'; }
+    try{ navigator.clipboard.writeText(out.value).then(function(){ c.textContent='Respuestas copiadas. Pegadlas en WhatsApp o en un email.'; },sel); }catch(e){ sel(); }
+  });
+  load(); progress();
+})();
+</script>
+</body>
+</html>
